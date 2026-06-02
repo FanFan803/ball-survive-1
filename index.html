@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>彈幕生存 v4</title>
+<title>彈幕生存 v4.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;user-select:none}
@@ -728,11 +728,39 @@ let startCountTimer=null;
 function applyMove(cx,cy){
   if(gstate!=='playing' || isStartingCount)return;
   const r=canvas.getBoundingClientRect();
-  player.x=cx-r.left; player.y=cy-r.top;
+  const topPad=isMobile?48:62;
+  const pr=player.r*(miniOn?.6:1);
+  player.x=Math.max(pr,Math.min(W()-pr,cx-r.left));
+  player.y=Math.max(topPad+pr,Math.min(H()-pr,cy-r.top));
 }
 canvas.addEventListener('mousemove',e=>applyMove(e.clientX,e.clientY));
-canvas.addEventListener('touchstart',e=>{e.preventDefault();applyMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
-canvas.addEventListener('touchmove',e=>{e.preventDefault();applyMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+
+// 多點觸控：追蹤用於移動的 touch ID，其他觸控不影響移動
+let moveTouchId=null;
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  for(let i=0;i<e.changedTouches.length;i++){
+    const t=e.changedTouches[i];
+    if(moveTouchId===null){moveTouchId=t.identifier;applyMove(t.clientX,t.clientY);}
+  }
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  for(let i=0;i<e.changedTouches.length;i++){
+    const t=e.changedTouches[i];
+    if(t.identifier===moveTouchId)applyMove(t.clientX,t.clientY);
+  }
+},{passive:false});
+canvas.addEventListener('touchend',e=>{
+  for(let i=0;i<e.changedTouches.length;i++){
+    if(e.changedTouches[i].identifier===moveTouchId)moveTouchId=null;
+  }
+},{passive:false});
+canvas.addEventListener('touchcancel',e=>{
+  for(let i=0;i<e.changedTouches.length;i++){
+    if(e.changedTouches[i].identifier===moveTouchId)moveTouchId=null;
+  }
+},{passive:false});
 
 document.addEventListener('keydown',e=>{
   const k=e.key;
@@ -915,6 +943,7 @@ function spawnWave(){
   const r=cfg.bR;
   const w=W(),h=H();
   if(Math.random()<0.022)spawnItem();
+  _spawnPat=pat;
 
   switch(pat){
     case 'straight': addB(rand(r+20,w-r-20),-r-5,0,spd,r,cfg); break;
@@ -1008,14 +1037,16 @@ function spawnWave(){
   }
 }
 
+let _spawnPat='';
 function addB(x,y,dx,dy,r,cfg){
-  bullets.push({x,y,px:x,py:y,dx,dy,r,cfg,bFill:cfg.bFill,bRim:cfg.bRim,age:0});
+  bullets.push({x,y,px:x,py:y,dx,dy,r,cfg,bFill:cfg.bFill,bRim:cfg.bRim,age:0,pat:_spawnPat});
 }
 function addBx(x,y,dx,dy,r,cfg){
-  const b={x,y,px:x,py:y,dx,dy,r,cfg,bFill:cfg.bFill,bRim:cfg.bRim,age:0};
+  const b={x,y,px:x,py:y,dx,dy,r,cfg,bFill:cfg.bFill,bRim:cfg.bRim,age:0,pat:_spawnPat};
   bullets.push(b);return b;
 }
 function spawnPatternDirect(pat,spd,r,cfg,w,h){
+  _spawnPat=pat;
   switch(pat){
     case 'straight': addB(rand(r+20,w-r-20),-r-5,0,spd,r,cfg); break;
     case 'double':
@@ -1189,7 +1220,9 @@ function endGame(){
 let stageMode=false;
 let stageIdx=0;
 let stageTimer=0;
-let stageBestClears=JSON.parse(localStorage.getItem('bhStageClears')||'[]');
+// 預設全50關解鎖
+const _defaultClears=Array.from({length:50},(_,i)=>i);
+let stageBestClears=(()=>{try{const s=JSON.parse(localStorage.getItem('bhStageClears'));if(Array.isArray(s)&&s.length>0)return s;}catch(e){}return [..._defaultClears];})();
 let stageTotalScore=0;
 
 /* ══════════════════════════════════════════════════
@@ -1820,6 +1853,7 @@ function spawnWaveStage(){
 
 function spawnPatternWith(pat,spd,r,cfg,w,h){
   if(isStartingCount) return;
+  _spawnPat=pat;
   switch(pat){
     case 'straight': addB(rand(r+20,w-r-20),-r-5,0,spd,r,cfg); break;
     case 'double':
@@ -2022,12 +2056,39 @@ function renderFrame(dt){
     if(b.meteor){ctx.beginPath();ctx.arc(b.x,b.y,r+6,0,Math.PI*2);ctx.strokeStyle=b.bFill+'22';ctx.lineWidth=3;ctx.stroke();}
     if(b.countdown&&!b.cdBurst){const progress=b.cdTimer/45;ctx.beginPath();ctx.arc(b.x,b.y,r+8,-.5*Math.PI,-.5*Math.PI+progress*Math.PI*2);ctx.strokeStyle='#ff4444bb';ctx.lineWidth=3;ctx.stroke();}
     if(b.homing){const ang=Math.atan2(b.dy,b.dx);ctx.save();ctx.translate(b.x,b.y);ctx.rotate(ang);ctx.beginPath();ctx.moveTo(r+5,0);ctx.lineTo(r+11,-4);ctx.lineTo(r+11,4);ctx.fillStyle=b.bFill+'99';ctx.fill();ctx.restore();}
+    // 彈幕標示
+    if(b.pat){
+      const PAT_LABEL={
+        straight:'直',double:'雙',triple:'三',angled:'斜',fan:'扇',homing:'追',
+        burst:'炸',wave:'波',spiral:'旋',cross:'十',snipe:'狙',boomerang:'迴',
+        rain:'雨',wall:'牆',zigzag:'鋸',ring:'環',barrage:'排',matrix:'陣',
+        vortex:'渦',bounce:'彈',meteor:'隕',web:'網',laser:'射',gravity:'弧',
+        pendulum:'擺',comet:'彗',grid:'格',flower:'花',orbit:'繞',countdown:'炸',
+        earthquake:'震',column:'柱',sweep:'掃',pincer:'鉗',curtain:'幕',gatling:'連',
+        helix:'螺',nova:'新',claymore:'劍',random_walk:'隨',clone:'分',arrow:'箭',
+        chakram:'輪',shuriken:'鏢',hydra:'龍',aiming_triple:'三鎖',side_burst:'側炸',
+        delayed:'遲',pursuit:'急',chaos:'亂'
+      };
+      const lbl=PAT_LABEL[b.pat];
+      if(lbl){
+        ctx.save();
+        ctx.font=`bold ${Math.max(7,r*.85)}px 'Noto Sans TC',sans-serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillStyle='rgba(0,0,0,0.55)';
+        ctx.fillText(lbl,b.x+.5,b.y+.5);
+        ctx.fillStyle='rgba(255,255,255,0.92)';
+        ctx.fillText(lbl,b.x,b.y);
+        ctx.restore();
+      }
+    }
     
     if(!isStartingCount && sweptCollide(b,dt)){
       if(!invincible&&iframes<=0){onHit(b);bullets.splice(i,1);if(gstate!=='playing'){if(needRst)ctx.restore();return;}continue;}
       else addCombo();
     }
     if(b.y>h+90||b.x<-100||b.x>w+100||b.y<-350){if(!b.boomerang && !isStartingCount) addCombo();statDodge++;bullets.splice(i,1);}
+    // 追蹤彈幕（homing / pursuit）超過 10 秒自動消失
+    else if((b.homing||b.pursuit)&&b.age>600){spawnP(b.x,b.y,b.bFill,4);if(!isStartingCount){addCombo();statDodge++;}bullets.splice(i,1);}
   }
 
   for(let i=particles.length-1;i>=0;i--){
