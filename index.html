@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>彈幕生存 v4.1</title>
+<title>彈幕生存 v4.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;user-select:none}
@@ -298,6 +298,50 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   transform: scale(0.95);
 }
 
+/* ── 主選單多頁切換 ── */
+.mn-page{display:none;width:100%}
+.mn-page.active{display:block;width:100%}
+
+/* 主選單標題動畫 */
+@keyframes titleGlow{
+  0%,100%{text-shadow:0 0 28px rgba(0,245,255,.5),0 0 55px rgba(0,245,255,.18)}
+  50%{text-shadow:0 0 55px rgba(0,245,255,.92),0 0 100px rgba(0,245,255,.4),0 0 160px rgba(0,245,255,.1)}
+}
+@keyframes titleFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+.logo-anim{animation:titleGlow 2.8s ease-in-out infinite,titleFloat 4s ease-in-out infinite}
+
+/* 主選單大導航按鈕 */
+.mb-nav{width:100%;max-width:320px;padding:15px 20px;border-radius:14px;
+  font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.04);
+  color:#fff;text-align:left;display:flex;align-items:center;gap:14px;
+  transition:background .16s,transform .14s,border-color .16s;
+  -webkit-appearance:none;appearance:none}
+.mb-nav:hover{background:rgba(255,255,255,.09);transform:translateX(5px)}
+.mb-nav:active{transform:scale(.96)}
+.mb-nav.pri{border-color:var(--c);color:var(--c)}
+.mb-nav.pri:hover{background:rgba(0,245,255,.08)}
+.mb-nav .mn-icon{font-size:1.25rem;flex-shrink:0;width:28px;text-align:center}
+.mb-nav .mn-txt{display:flex;flex-direction:column;gap:2px}
+.mb-nav .mn-sub{font-size:.56rem;color:rgba(255,255,255,.35);
+  font-family:'Noto Sans TC',sans-serif;font-weight:400;letter-spacing:0}
+
+/* 子頁返回按鈕 */
+.back-btn{display:flex;align-items:center;gap:7px;background:transparent;border:none;
+  color:rgba(255,255,255,.32);font-size:.68rem;cursor:pointer;padding:0;
+  margin-bottom:18px;transition:color .15s;font-family:'Noto Sans TC',sans-serif;
+  letter-spacing:.5px}
+.back-btn:hover{color:rgba(255,255,255,.72)}
+
+/* 首頁最高分欄 */
+.mn-bests-row{display:flex;justify-content:space-between;align-items:center;
+  padding:5px 10px;background:rgba(255,255,255,.04);border-radius:7px;margin-bottom:4px}
+.mn-bests-lbl{font-size:.68rem}
+.mn-bests-val{font-family:'Orbitron',monospace;font-size:.7rem;color:rgba(255,255,255,.6)}
+
 @media(max-height:580px){
   .oi{padding:10px 14px 22px}
   .logo{margin-top:2px;margin-bottom:2px}
@@ -376,76 +420,122 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <!-- ══════════════ MENU ══════════════ -->
 <div id="mn" class="ov">
   <div class="obg"></div>
-  <div class="oi">
-    <div class="logo">彈幕生存</div>
-    <div class="logo-s">BULLET HELL SURVIVAL · v4.0</div>
 
-    <div class="sh">選擇難度 DIFFICULTY (1–9 鍵盤快選)</div>
-    <button onclick="showStageMenu()" style="width:100%;max-width:740px;margin-bottom:14px;padding:14px 18px;border-radius:13px;border:2px solid rgba(255,215,0,.45);background:rgba(255,215,0,.07);color:#ffd700;cursor:pointer;font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;letter-spacing:1px;transition:background .18s;-webkit-appearance:none" onmouseover="this.style.background='rgba(255,215,0,.14)'" onmouseout="this.style.background='rgba(255,215,0,.07)'">
-      🗺 關卡模式 STAGE MODE &nbsp;·&nbsp; 50 關卡挑戰 (逐關解鎖)
-    </button>
-    <div class="sh">自由模式 FREE PLAY (1–0 鍵盤快選)</div>
-    <div class="dg" id="dg"></div><!-- JS fills this -->
-
-    <div class="sh">設定 SETTINGS</div>
-    <div class="sr" onclick="toggleInv()">
-      <div class="sr-l">
-        <div class="sr-n">🛡 無敵練習模式</div>
-        <div class="sr-s">開啟後子彈不造成傷害，分數不計入紀錄</div>
+  <!-- ── 首頁 HOME ── -->
+  <div id="mnp-home" class="mn-page active">
+    <div class="oi" style="justify-content:center">
+      <div class="logo logo-anim" style="margin-top:32px">彈幕生存</div>
+      <div class="logo-s">BULLET HELL SURVIVAL · v4.2</div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:30px">
+        <button class="mb-nav pri" onclick="showMenuPage('mnp-free')">
+          <span class="mn-icon">▶</span>
+          <div class="mn-txt"><span>自由模式 FREE PLAY</span><span class="mn-sub">11 種難度 · 鍵盤 1–0 快選</span></div>
+        </button>
+        <button class="mb-nav" style="border-color:rgba(255,215,0,.45);color:var(--g)" onclick="showStageMenu()">
+          <span class="mn-icon">🗺</span>
+          <div class="mn-txt"><span>關卡模式 STAGE MODE</span><span class="mn-sub">50 關逐關挑戰</span></div>
+        </button>
+        <button class="mb-nav" onclick="showMenuPage('mnp-help')">
+          <span class="mn-icon">❓</span>
+          <div class="mn-txt"><span>遊戲說明 HOW TO PLAY</span><span class="mn-sub">玩法 · 道具 · 50 種彈幕</span></div>
+        </button>
+        <button class="mb-nav" onclick="showMenuPage('mnp-settings')">
+          <span class="mn-icon">⚙</span>
+          <div class="mn-txt"><span>設定 SETTINGS</span><span class="mn-sub">無敵練習模式 · 全螢幕</span></div>
+        </button>
       </div>
-      <div class="tog" id="itog"></div>
+      <div id="mn-bests" style="margin-top:30px;width:100%;max-width:320px"></div>
     </div>
-
-    <div class="kp">
-      <div class="sh" style="margin-bottom:9px">鍵盤快捷鍵 KEYBOARD SHORTCUTS</div>
-      <div class="kg">
-        <div class="ki"><span class="kib">P</span><span class="kit">暫停 / 繼續</span></div>
-        <div class="ki"><span class="kib">B</span><span class="kit">使用炸彈</span></div>
-        <div class="ki"><span class="kib">R</span><span class="kit">再玩一次</span></div>
-        <div class="ki"><span class="kib">Esc</span><span class="kit">回主選單</span></div>
-        <div class="ki"><span class="kib">1~0</span><span class="kit">直選難度</span></div>
-        <div class="ki"><span class="kib">I</span><span class="kit">切換無敵</span></div>
-        <div class="ki"><span class="kib">F</span><span class="kit">全螢幕</span></div>
-        <div class="ki"><span class="kib">Space</span><span class="kit">倒數中按空白略過</span></div>
-      </div>
-    </div>
-
-    <div class="sh">玩法說明 HOW TO PLAY</div>
-    <div class="hp">
-      <div class="hg">
-        <div class="hi"><div class="hii">🖱</div><div class="hit"><b>滑鼠移動</b>控制角色</div></div>
-        <div class="hi"><div class="hii">👆</div><div class="hit"><b>觸控拖曳</b>（手機橫放）</div></div>
-        <div class="hi"><div class="hii">❤</div><div class="hit"><b>生命值</b>：被擊中扣1條</div></div>
-        <div class="hi"><div class="hii">💥</div><div class="hit"><b>炸彈</b>：清除所有子彈</div></div>
-        <div class="hi"><div class="hii">🎁</div><div class="hit"><b>道具掉落</b>：接觸拾取</div></div>
-        <div class="hi"><div class="hii">⭐</div><div class="hit"><b>Combo</b>：連閃提升倍率</div></div>
-        <div class="hi"><div class="hii">🛡</div><div class="hit">中彈後<b>3秒無敵幀</b></div></div>
-        <div class="hi"><div class="hii">📈</div><div class="hit">分越高<b>速度越快</b>（有上限）</div></div>
-        <div class="hi"><div class="hii">🎯</div><div class="hit"><b>紅色圓圈</b>=實際碰撞範圍</div></div>
-        <div class="hi"><div class="hii">⚡</div><div class="hit"><b>掃描碰撞</b>：高速子彈不穿透</div></div>
-      </div>
-    </div>
-
-    <div class="sh">道具說明 ITEMS (10種)</div>
-    <div class="hp">
-      <div class="hg">
-        <div class="hi"><div class="hii">❤</div><div class="hit"><b>生命+1</b>：恢復一條命（可超上限+1）</div></div>
-        <div class="hi"><div class="hii">💥</div><div class="hit"><b>炸彈+1</b>：補充一顆炸彈</div></div>
-        <div class="hi"><div class="hii">🐢</div><div class="hit"><b>減速5秒</b>：所有子彈變慢</div></div>
-        <div class="hi"><div class="hii">🛡</div><div class="hit"><b>護盾4秒</b>：臨時無敵</div></div>
-        <div class="hi"><div class="hii">⭐</div><div class="hit"><b>雙倍分10秒</b>：分數×2</div></div>
-        <div class="hi"><div class="hii">🧲</div><div class="hit"><b>磁鐵8秒</b>：自動吸附道具</div></div>
-        <div class="hi"><div class="hii">❄</div><div class="hit"><b>冰凍3秒</b>：子彈暫停移動</div></div>
-        <div class="hi"><div class="hii">💣</div><div class="hit"><b>大炸彈</b>：清屏+3秒護盾</div></div>
-        <div class="hi"><div class="hii">🌀</div><div class="hit"><b>縮小5秒</b>：玩家縮小碰撞減半</div></div>
-        <div class="hi"><div class="hii">🎆</div><div class="hit"><b>Combo延長</b>：Combo不斷條10秒</div></div>
-      </div>
-    </div>
-
-    <div class="sh">50種彈幕樣式 BULLET PATTERNS</div>
-    <div class="pg" id="pat-pg"></div><!-- JS fills -->
-
   </div>
+
+  <!-- ── 自由模式 FREE PLAY ── -->
+  <div id="mnp-free" class="mn-page">
+    <div class="oi">
+      <button class="back-btn" onclick="showMenuPage('mnp-home')">◀ 返回主選單</button>
+      <div class="sh">自由模式 FREE PLAY (1–0 鍵盤快選)</div>
+      <div class="dg" id="dg"></div><!-- JS fills this -->
+    </div>
+  </div>
+
+  <!-- ── 遊戲說明 HOW TO PLAY ── -->
+  <div id="mnp-help" class="mn-page">
+    <div class="oi">
+      <button class="back-btn" onclick="showMenuPage('mnp-home')">◀ 返回主選單</button>
+
+      <div class="kp">
+        <div class="sh" style="margin-bottom:9px">鍵盤快捷鍵 KEYBOARD SHORTCUTS</div>
+        <div class="kg">
+          <div class="ki"><span class="kib">P</span><span class="kit">暫停 / 繼續</span></div>
+          <div class="ki"><span class="kib">B</span><span class="kit">使用炸彈</span></div>
+          <div class="ki"><span class="kib">R</span><span class="kit">再玩一次</span></div>
+          <div class="ki"><span class="kib">Esc</span><span class="kit">回主選單</span></div>
+          <div class="ki"><span class="kib">1~0</span><span class="kit">直選難度</span></div>
+          <div class="ki"><span class="kib">I</span><span class="kit">切換無敵</span></div>
+          <div class="ki"><span class="kib">F</span><span class="kit">全螢幕</span></div>
+          <div class="ki"><span class="kib">Space</span><span class="kit">倒數中略過</span></div>
+        </div>
+      </div>
+
+      <div class="sh">玩法說明 HOW TO PLAY</div>
+      <div class="hp">
+        <div class="hg">
+          <div class="hi"><div class="hii">🖱</div><div class="hit"><b>滑鼠移動</b>控制角色</div></div>
+          <div class="hi"><div class="hii">👆</div><div class="hit"><b>觸控拖曳</b>（手機橫放）</div></div>
+          <div class="hi"><div class="hii">❤</div><div class="hit"><b>生命值</b>：被擊中扣1條</div></div>
+          <div class="hi"><div class="hii">💥</div><div class="hit"><b>炸彈</b>：清除所有子彈</div></div>
+          <div class="hi"><div class="hii">🎁</div><div class="hit"><b>道具掉落</b>：接觸拾取</div></div>
+          <div class="hi"><div class="hii">⭐</div><div class="hit"><b>Combo</b>：自由模式連閃提升倍率</div></div>
+          <div class="hi"><div class="hii">🛡</div><div class="hit">中彈後<b>3秒無敵幀</b></div></div>
+          <div class="hi"><div class="hii">📈</div><div class="hit">分越高<b>速度越快</b>（有上限）</div></div>
+          <div class="hi"><div class="hii">🎯</div><div class="hit"><b>紅色圓圈</b>=實際碰撞範圍</div></div>
+          <div class="hi"><div class="hii">⚡</div><div class="hit"><b>掃描碰撞</b>：高速子彈不穿透</div></div>
+          <div class="hi"><div class="hii">★</div><div class="hit"><b>綠色星星</b>：關卡模式每關3顆，全蒐集解鎖第51關</div></div>
+          <div class="hi"><div class="hii">🎒</div><div class="hit"><b>包包</b>：關卡通關獎勵道具，開局前選一件使用</div></div>
+        </div>
+      </div>
+
+      <div class="sh">道具說明 ITEMS (10種)</div>
+      <div class="hp">
+        <div class="hg">
+          <div class="hi"><div class="hii">❤</div><div class="hit"><b>生命+1</b>：恢復一條命（可超上限+1）</div></div>
+          <div class="hi"><div class="hii">💥</div><div class="hit"><b>炸彈+1</b>：補充一顆炸彈</div></div>
+          <div class="hi"><div class="hii">🐢</div><div class="hit"><b>減速5秒</b>：所有子彈變慢</div></div>
+          <div class="hi"><div class="hii">🛡</div><div class="hit"><b>護盾4秒</b>：臨時無敵</div></div>
+          <div class="hi"><div class="hii">⭐</div><div class="hit"><b>雙倍分10秒</b>：分數×2</div></div>
+          <div class="hi"><div class="hii">🧲</div><div class="hit"><b>磁鐵8秒</b>：自動吸附道具</div></div>
+          <div class="hi"><div class="hii">❄</div><div class="hit"><b>冰凍3秒</b>：子彈暫停移動</div></div>
+          <div class="hi"><div class="hii">💣</div><div class="hit"><b>大炸彈</b>：清屏+3秒護盾</div></div>
+          <div class="hi"><div class="hii">🌀</div><div class="hit"><b>縮小5秒</b>：玩家縮小碰撞減半</div></div>
+          <div class="hi"><div class="hii">🎆</div><div class="hit"><b>Combo延長</b>：Combo不斷條10秒</div></div>
+        </div>
+      </div>
+
+      <div class="sh">50種彈幕樣式 BULLET PATTERNS</div>
+      <div class="pg" id="pat-pg"></div><!-- JS fills -->
+    </div>
+  </div>
+
+  <!-- ── 設定 SETTINGS ── -->
+  <div id="mnp-settings" class="mn-page">
+    <div class="oi">
+      <button class="back-btn" onclick="showMenuPage('mnp-home')">◀ 返回主選單</button>
+      <div class="sh">設定 SETTINGS</div>
+      <div class="sr" onclick="toggleInv()" style="max-width:740px">
+        <div class="sr-l">
+          <div class="sr-n">🛡 無敵練習模式</div>
+          <div class="sr-s">開啟後子彈不造成傷害，分數不計入紀錄</div>
+        </div>
+        <div class="tog" id="itog"></div>
+      </div>
+      <div class="sr" onclick="toggleFullscreen()" style="max-width:740px">
+        <div class="sr-l">
+          <div class="sr-n">⛶ 全螢幕模式</div>
+          <div class="sr-s">F 鍵或點此切換全螢幕</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══ GAME OVER ══ -->
@@ -520,10 +610,10 @@ const $mile=$('mile'),$nf=$('nf'),$phb=$('phb');
 
 const DKEYS=['rabbit','happy','piha','rabbit2','mouse','dora','glasses','wizard','mouseking','gugu','eason'];
 const ALL_PATS=['straight','double','triple','angled','fan','homing','burst','wave','spiral','cross',
-  'snipe','boomerang','rain','wall','zigzag','ring','barrage','matrix','vortex','bounce',
-  'meteor','web','laser','gravity','pendulum','comet','grid','flower','orbit','countdown',
-  'earthquake','column','sweep','pincer','curtain','gatling','helix','nova','claymore','random_walk',
-  'clone','arrow','chakram','shuriken','hydra','aiming_triple','side_burst','delayed','pursuit','chaos'];
+  'snipe','boomerang','rain','wall','zigzag','ring','barrage','matrix','funnel','bounce',
+  'meteor','web','laser','gravity','pendulum','comet','grid','flower','inward','countdown',
+  'cascade','column','sweep','stagger','curtain','gatling','helix','pulse','claymore','random_walk',
+  'clone','arrow','chakram','shuriken','hydra','aiming_triple','chevron','delayed','pursuit','chaos'];
 
 const DIFF={
   rabbit:{
@@ -575,16 +665,16 @@ const DIFF={
     label:'🔵 Dora 陳',color:'#00bfff',bc:'rgba(0,191,255,.18)',
     lv:'LV 4.5',lives:2,bombs:2,
     interval:300,speed:8.0,speedCap:2.2,accelStep:280,accelAmt:.07,
-    patterns:['straight','double','triple','fan','cross','ring','orbit','column','sweep','aiming_triple'],
+    patterns:['straight','double','triple','fan','cross','ring','funnel','column','sweep','aiming_triple'],
     bR:11,bFill:'#00bfff',bRim:'#003055',
     death:'🔵 Dora 陳：道具在我口袋！',winCol:'#00bfff',
-    desc:'圓環·軌道·橫掃·幾何密集彈'
+    desc:'圓環·漏斗·橫掃·幾何密集彈'
   },
   glasses:{
     label:'🕶 Glasses 陳',color:'#ff8c00',bc:'rgba(255,140,0,.18)',
     lv:'LV 5',lives:2,bombs:2,
     interval:230,speed:9.5,speedCap:2.3,accelStep:250,accelAmt:.07,
-    patterns:['straight','double','triple','homing','burst','wave','wall','bounce','ring','meteor','helix','nova','gatling'],
+    patterns:['straight','double','triple','homing','burst','wave','wall','bounce','ring','meteor','helix','pulse','gatling'],
     bR:10,bFill:'#ffbb44',bRim:'#6a3000',
     death:'🕶 Glasses 陳讓你看清現實了',winCol:'#ff8c00',
     desc:'爆裂·彈牆·螺旋·高壓密集混合'
@@ -593,25 +683,25 @@ const DIFF={
     label:'🧙 巫師 Glasses 陳',color:'#b464ff',bc:'rgba(180,100,255,.18)',
     lv:'LV 6',lives:2,bombs:1,
     interval:180,speed:11.0,speedCap:2.4,accelStep:220,accelAmt:.07,
-    patterns:['homing','burst','spiral','vortex','flower','orbit','chakram','shuriken','hydra','delayed','chaos'],
+    patterns:['homing','burst','spiral','inward','flower','funnel','chakram','shuriken','hydra','delayed','chaos'],
     bR:10,bFill:'#cc88ff',bRim:'#3d0075',
     death:'🧙 巫師施法：你消失了',winCol:'#b464ff',
-    desc:'漩渦·花瓣·魔法圓陣·高級特殊彈'
+    desc:'收斂·漏斗·花瓣·魔法圓陣特殊彈'
   },
   mouseking:{
     label:'👑 MouseKing 陳',color:'#ff4444',bc:'rgba(255,50,50,.18)',
     lv:'LV 7',lives:1,bombs:2,
     interval:150,speed:12.0,speedCap:2.5,accelStep:200,accelAmt:.065,
-    patterns:['straight','double','homing','snipe','barrage','matrix','curtain','pincer','claymore','arrow','side_burst'],
+    patterns:['straight','double','homing','snipe','barrage','matrix','curtain','stagger','claymore','arrow','chevron'],
     bR:9,bFill:'#ff6666',bRim:'#6b0000',
     death:'👑 鼠王陳：稱孤道寡！',winCol:'#ff4444',
-    desc:'狙擊·布陣·側壓·幾乎無處可逃'
+    desc:'狙擊·布陣·交錯·人字幾乎無法逃'
   },
   gugu:{
     label:'🐔 GuGuEason 陳',color:'#ff2d78',bc:'rgba(255,45,120,.18)',
     lv:'LV 8',lives:1,bombs:1,
     interval:110,speed:13.0,speedCap:2.6,accelStep:180,accelAmt:.06,
-    patterns:['snipe','burst','spiral','cross','barrage','earthquake','nova','gatling',
+    patterns:['snipe','burst','spiral','cross','barrage','cascade','pulse','gatling',
                'helix','flower','hydra','aiming_triple','random_walk','pursuit','chaos'],
     bR:9,bFill:'#ff6aa7',bRim:'#6a0028',
     death:'🐔 咕咕Eason：咕…你輸了',winCol:'#ff2d78',
@@ -635,16 +725,16 @@ const PAT_META={
   cross:['✚','十字','側邊收斂'],snipe:['🔫','狙擊','精準瞄準'],boomerang:['🪃','迴旋鏢','轉彎回頭'],
   rain:['🌧','彈雨','8枚快落'],wall:['🧱','彈牆','留缺口橫牆'],zigzag:['⚡','鋸齒','Z字飛行'],
   ring:['⭕','圓環','8枚環形'],barrage:['🎆','齊射','12連快發'],matrix:['📐','矩陣','格子留通道'],
-  vortex:['🔄','漩渦','向心螺旋'],bounce:['🏓','彈跳','碰壁反彈'],meteor:['☄','隕石','大型慢速'],
+  funnel:['⇩','漏斗','兩側收斂中心'],bounce:['🏓','彈跳','碰壁反彈'],meteor:['☄','隕石','大型慢速'],
   web:['🕸','蜘蛛網','放射後分裂'],laser:['⚡','雷射','細長高速'],gravity:['🌍','重力','拋物落弧'],
   pendulum:['🕰','鐘擺','左右擺動'],comet:['🌠','彗星','拖尾彈'],grid:['#️⃣','格陣','棋盤孔隙'],
-  flower:['🌸','花瓣','旋轉花形'],orbit:['🪐','軌道','繞圈後發'],countdown:['⏱','倒數','定時爆炸'],
-  earthquake:['🌋','地震','底部震波'],column:['🏛','立柱','多列同步'],sweep:['🧹','橫掃','整排橫移'],
-  pincer:['🦀','鉗形','兩側夾擊'],curtain:['🎭','彈幕牆','密集大牆'],gatling:['🔩','加特林','高頻單發'],
-  helix:['🧬','雙螺旋','左右交替'],nova:['💥','新星','全方向放射'],claymore:['⚔','劍陣','交叉刀型'],
+  flower:['🌸','花瓣','旋轉花形'],inward:['↘↙','收斂','兩端斜插中線'],countdown:['⏱','倒數','定時爆炸'],
+  cascade:['≋','瀑布','左右時間差掃'],column:['🏛','立柱','多列同步'],sweep:['🧹','橫掃','整排橫移'],
+  stagger:['⿴','交錯','左右欄高度差'],curtain:['🎭','彈幕牆','密集大牆'],gatling:['🔩','加特林','高頻單發'],
+  helix:['🧬','雙螺旋','左右交替'],pulse:['⁞','脈衝','同位快速4連'],claymore:['⚔','劍陣','交叉刀型'],
   random_walk:['🎲','隨機遊走','不規則移動'],clone:['👥','分身','射後複製'],arrow:['🏹','箭形','V字飛來'],
   chakram:['🌐','飛輪','旋轉環形'],shuriken:['🌟','手裡劍','四角旋轉'],hydra:['🐉','九頭蛇','分裂再分裂'],
-  aiming_triple:['🎯','三重瞄準','同時三顆追蹤'],side_burst:['💢','側爆','從兩側衝入'],
+  aiming_triple:['🎯','三重瞄準','同時三顆追蹤'],chevron:['˄','人字','7發人字編隊'],
   delayed:['⏳','延遲彈','延後再飛'],pursuit:['🏃','急追','加速追蹤'],chaos:['🌪','混沌','隨機一切']
 };
 
@@ -704,17 +794,31 @@ let bests={}; DKEYS.forEach(k=>bests[k]=0);
 let stageBest={};
 let slowFactor=1;
 let lastWasStage=false;
+// 星星與包包
+let stageStarsEarned={};
+let stageStarsCollected=0;
+let stageStarTimes=[];
+let stageElapsed=0;
+let bagItems=[];
 const SAVE_KEY='bhSaveV5';
 function saveGame(){
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({bests,stageBest,stageClears:stageBestClears}));}catch(e){}
 }
+function saveStarData(){try{localStorage.setItem('bhStarsV1',JSON.stringify(stageStarsEarned));}catch(e){}}
+function saveBagData(){try{localStorage.setItem('bhBagV1',JSON.stringify(bagItems));}catch(e){}}
 (function loadSave(){
   let s={};
   try{s=JSON.parse(localStorage.getItem(SAVE_KEY))||{};}catch(e){}
   if(s.bests)DKEYS.forEach(k=>{if(typeof s.bests[k]==='number')bests[k]=s.bests[k];});
   if(s.stageBest&&typeof s.stageBest==='object')stageBest=s.stageBest;
+  try{stageStarsEarned=JSON.parse(localStorage.getItem('bhStarsV1'))||{};}catch(e){}
+  try{bagItems=JSON.parse(localStorage.getItem('bhBagV1'))||[];}catch(e){}
 })();
 let magnetOn=false,doubleOn=false,frozenOn=false,miniOn=false,comboLockOn=false;
+let pillOn=false,pillTO=null;
+let frenzyOn=false,frenzyTO=null;
+let bigOn=false,bigTO=null;
+let speedBoostFactor=1,speedupTO=null;
 let doubleTO=null,frozenTO=null,miniTO=null,comboLockTO=null,slowTO=null;
 let statDodge=0,statHit=0,statItem=0,statCombo=0;
 const player={x:0,y:0,r:14,trail:[]};
@@ -856,16 +960,42 @@ function startGame(diff){
   startWithCountdown(false);
 }
 
+function showMenuPage(pageId){
+  document.querySelectorAll('.mn-page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById(pageId);
+  if(pg)pg.classList.add('active');
+  mnUI.scrollTop=0;
+  if(pageId==='mnp-home')updateMnBests();
+}
+
+function updateMnBests(){
+  const el=document.getElementById('mn-bests');
+  if(!el)return;
+  const top=DKEYS.filter(k=>bests[k]>0).sort((a,b)=>bests[b]-bests[a]).slice(0,4);
+  if(!top.length){el.innerHTML='';return;}
+  el.innerHTML='<div style="font-size:.52rem;color:rgba(255,255,255,.22);letter-spacing:2px;text-align:center;margin-bottom:8px;text-transform:uppercase">最高紀錄 BEST SCORES</div>'+
+    top.map(k=>`<div class="mn-bests-row"><span class="mn-bests-lbl" style="color:${DIFF[k].color}">${DIFF[k].label.split(' ').slice(0,2).join(' ')}</span><span class="mn-bests-val">${bests[k].toLocaleString()}</span></div>`).join('');
+}
+
+function cleanupGameDOM(){
+  bullets=[];particles=[];items=[];
+  document.getElementById('stage-hud-extra')?.remove();
+  document.getElementById('bag-select')?.remove();
+  ctx.clearRect(0,0,W(),H());
+  ctx.fillStyle='#03060d';ctx.fillRect(0,0,W(),H());
+}
+
 function showMenu(){
   clearStartCountdown();
   gstate='menu';
   clearTimeout(spawnTO);
   if(raf){cancelAnimationFrame(raf);raf=null;}
+  cleanupGameDOM();
   const sm=document.getElementById('stage-menu');
   if(sm) sm.style.display='none';
   mnUI.style.display='flex'; goUI.style.display='none'; puUI.style.display='none';
   dbBm.style.display='none'; dbPs.style.display='none';
-  ctx.clearRect(0,0,W(),H());
+  showMenuPage('mnp-home');
 }
 
 function togglePause(){
@@ -1032,8 +1162,13 @@ function spawnWave(){
     case 'side_burst':{for(let i=0;i<5;i++){addB(-r,rand(h*.1,h*.7),spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);addB(w+r,rand(h*.1,h*.7),-spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);}break;}
     case 'delayed':{const cnt=randInt(3,6);for(let i=0;i<cnt;i++)setTimeout(()=>{if(gstate==='playing')addB(rand(r+20,w-r-20),-r-5,rand(-.4,.4),spd,r,cfg);},i*180);break;}
     case 'pursuit':{const b=addBx(rand(r+20,w-r-20),-r-5,0,spd*.5,r,cfg);b.pursuit=true;b.pursuitAcc=0;break;}
-    case 'chaos':{const types2=['straight','double','burst','homing','rain','snipe','side_burst','nova','fan','triple'];
-      spawnPatternDirect(pick(types2),spd,r,cfg,w,h);break;}
+    case 'chaos':{const types2=['straight','double','fan','wave','triple'];spawnPatternDirect(pick(types2),spd,r,cfg,w,h);break;}
+    case 'funnel':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.88;const ang=Math.atan2(h*0.75,(w/2)-bx);addB(bx,-r-5,Math.cos(ang)*spd,Math.sin(ang)*spd,r,cfg);});break;}
+    case 'inward':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.85;addB(bx,-r-5,(w/2-bx)/(h*0.7)*spd,spd,r,cfg);});break;}
+    case 'pulse':{const px=rand(r+30,w-r-30);for(let i=0;i<4;i++)setTimeout(()=>{if(gstate==='playing')addB(px,-r-5,rand(-.15,.15),spd,r*.9,cfg);},i*55);break;}
+    case 'stagger':{for(let i=0;i<6;i++){const bx=(i+.5)*w/6;addB(bx,-r-5-(i%2===0?0:22),0,spd,r*.82,cfg);}break;}
+    case 'cascade':{for(let i=0;i<8;i++)setTimeout(()=>{if(gstate==='playing')addB((i+.5)*w/8,-r-5,0,spd*.9,r*.78,cfg);},i*50);break;}
+    case 'chevron':{const cx=rand(100,w-100);addB(cx,-r-5,0,spd,r,cfg);for(let i=1;i<=3;i++){addB(cx-i*26,-r-5-i*14,0,spd*.95,r,cfg);addB(cx+i*26,-r-5-i*14,0,spd*.95,r,cfg);}break;}
   }
 }
 
@@ -1086,7 +1221,8 @@ function applyItem(it){
   else if(t==='bigbomb'){for(const b of bullets)spawnP(b.x,b.y,b.bFill,4);bullets=[];iframes=Math.max(iframes,180);showNotif('💣 大炸彈！清場+護盾','#ff6600');shakeF=12;shakeStr=7;}
   else if(t==='mini'){miniOn=true;showNotif('🌀 縮小5秒','#aaffee');clearTimeout(miniTO);miniTO=setTimeout(()=>miniOn=false,5000);}
   else if(t==='combolock'){comboLockOn=true;showNotif('🎆 Combo保持10秒！','#ffdd44');clearTimeout(comboLockTO);comboLockTO=setTimeout(()=>comboLockOn=false,10000);}
-  spawnP(it.x,it.y,ICOLOR[t],10);
+  else if(t==='starGreen'){stageStarsCollected=Math.min(3,stageStarsCollected+1);showNotif('★ 星星 '+stageStarsCollected+'/3！','#39ff14');spawnP(it.x,it.y,'#39ff14',18);return;}
+  spawnP(it.x,it.y,ICOLOR[t]||'#fff',10);
 }
 
 function recalcSpeed(){
@@ -1212,7 +1348,7 @@ function endGame(){
   
   document.querySelector('#go .go-bn').innerHTML=`
     <button class="gb pri" onclick="startGame(lastDiff)">再玩一次 (R)</button>
-    <button class="gb" onclick="showMenu()">選擇難度 (Esc)</button>`;
+    <button class="gb" onclick="showMenu()">返回主選單 (Esc)</button>`;
   
   dbBm.style.display='none';dbPs.style.display='none';goUI.style.display='flex';
 }
@@ -1228,358 +1364,81 @@ let stageTotalScore=0;
 /* ══════════════════════════════════════════════════
    1 ~ 50 關 難度與門檻全方位重構與優化 (漸進梯度更平均)
    ══════════════════════════════════════════════════ */
-const STAGES=[
-  {
-    name:'第一關',sub:'小試身手的起點',
-    diff:'rabbit',dur:15,scoreTarget:100,lives:4,bombs:3,
-    patterns:['straight','double','angled'],speed:2.4,speedCap:1.1,interval:950,bR:15,
-    reward:'❤ 穩紮穩打！獲得雙倍生命開場',
-    boss:null
-  },
-  {
-    name:'第二關',sub:'直線單發演練',
-    diff:'rabbit',dur:16,scoreTarget:110,lives:4,bombs:3,
-    patterns:['straight','double','angled','wave'],speed:2.7,speedCap:1.13,interval:903,bR:15,
-    reward:'💥 補給到位！炸彈補滿',
-    boss:null
-  },
-  {
-    name:'第三關',sub:'雙線並行',
-    diff:'rabbit',dur:17,scoreTarget:120,lives:4,bombs:3,
-    patterns:['straight','double','angled','wave','triple'],speed:2.9,speedCap:1.17,interval:858,bR:15,
-    reward:'🛡 護盾4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第四關',sub:'斜角切入',
-    diff:'rabbit',dur:18,scoreTarget:130,lives:4,bombs:3,
-    patterns:['straight','double','angled','wave','triple'],speed:3.2,speedCap:1.2,interval:815,bR:15,
-    reward:'⭐ 雙倍分數15秒加成',
-    boss:null
-  },
-  {
-    name:'第五關',sub:'兔江的節奏',
-    diff:'rabbit',dur:19,scoreTarget:140,lives:4,bombs:3,
-    patterns:['straight','double','angled','wave','triple'],speed:3.4,speedCap:1.23,interval:775,bR:15,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🐰 Rabbit 江'
-  },
-  {
-    name:'第六關',sub:'牛牛小隊登場',
-    diff:'happy',dur:20,scoreTarget:160,lives:4,bombs:3,
-    patterns:['straight','double','angled'],speed:3.7,speedCap:1.27,interval:736,bR:14,
-    reward:'❄ 冰凍4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第七關',sub:'歡樂扇形散射',
-    diff:'happy',dur:21,scoreTarget:170,lives:4,bombs:3,
-    patterns:['straight','double','angled','fan'],speed:3.9,speedCap:1.3,interval:700,bR:14,
-    reward:'🌀 縮小特效6秒開場',
-    boss:null
-  },
-  {
-    name:'第八關',sub:'三連碎步',
-    diff:'happy',dur:21,scoreTarget:190,lives:4,bombs:3,
-    patterns:['straight','double','angled','fan','triple'],speed:4.2,speedCap:1.34,interval:665,bR:14,
-    reward:'🎆 Combo保持12秒開場',
-    boss:null
-  },
-  {
-    name:'第九關',sub:'波動衝擊',
-    diff:'happy',dur:22,scoreTarget:200,lives:4,bombs:3,
-    patterns:['straight','double','angled','fan','triple','wave'],speed:4.4,speedCap:1.37,interval:632,bR:14,
-    reward:'💣 清屏大炸彈開場',
-    boss:null
-  },
-  {
-    name:'第十關',sub:'快樂風暴',
-    diff:'happy',dur:23,scoreTarget:220,lives:4,bombs:3,
-    patterns:['straight','double','angled','fan','triple','wave'],speed:4.7,speedCap:1.4,interval:600,bR:14,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🐮 Happy 牛'
-  },
-  {
-    name:'第十一關',sub:'皮哈的碎步',
-    diff:'piha',dur:24,scoreTarget:240,lives:4,bombs:3,
-    patterns:['double','triple','fan'],speed:4.9,speedCap:1.44,interval:570,bR:14,
-    reward:'💥 補給到位！炸彈補滿',
-    boss:null
-  },
-  {
-    name:'第十二關',sub:'多發散射',
-    diff:'piha',dur:25,scoreTarget:270,lives:4,bombs:3,
-    patterns:['double','triple','fan','rain'],speed:5.2,speedCap:1.47,interval:542,bR:14,
-    reward:'🛡 護盾4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第十三關',sub:'不規則彈雨',
-    diff:'piha',dur:26,scoreTarget:290,lives:3,bombs:3,
-    patterns:['double','triple','fan','rain','wave'],speed:5.4,speedCap:1.5,interval:515,bR:14,
-    reward:'⭐ 雙倍分數15秒加成',
-    boss:null
-  },
-  {
-    name:'第十四關',sub:'波浪夾擊',
-    diff:'piha',dur:27,scoreTarget:320,lives:3,bombs:3,
-    patterns:['double','triple','fan','rain','wave','zigzag'],speed:5.7,speedCap:1.54,interval:489,bR:13,
-    reward:'🧲 磁鐵加成12秒開場',
-    boss:null
-  },
-  {
-    name:'第十五關',sub:'皮哈狂想曲',
-    diff:'piha',dur:28,scoreTarget:350,lives:3,bombs:3,
-    patterns:['double','triple','fan','rain','wave','zigzag'],speed:5.9,speedCap:1.57,interval:465,bR:13,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🦜 皮哈 Happy 牛'
-  },
-  {
-    name:'第十六關',sub:'雞塊酥脆陷阱',
-    diff:'rabbit2',dur:29,scoreTarget:380,lives:3,bombs:2,
-    patterns:['triple','angled','zigzag'],speed:6.2,speedCap:1.61,interval:442,bR:13,
-    reward:'🌀 縮小特效6秒開場',
-    boss:null
-  },
-  {
-    name:'第十七關',sub:'鋸齒地帶',
-    diff:'rabbit2',dur:30,scoreTarget:420,lives:3,bombs:2,
-    patterns:['triple','angled','zigzag','boomerang'],speed:6.4,speedCap:1.64,interval:420,bR:13,
-    reward:'🎆 Combo保持12秒開場',
-    boss:null
-  },
-  {
-    name:'第十八關',sub:'迴旋鏢折返',
-    diff:'rabbit2',dur:31,scoreTarget:460,lives:3,bombs:2,
-    patterns:['triple','angled','zigzag','boomerang','bounce'],speed:6.7,speedCap:1.67,interval:399,bR:13,
-    reward:'💣 清屏大炸彈開場',
-    boss:null
-  },
-  {
-    name:'第十九關',sub:'彈跳考驗',
-    diff:'rabbit2',dur:32,scoreTarget:500,lives:3,bombs:2,
-    patterns:['triple','angled','zigzag','boomerang','bounce','meteor'],speed:7,speedCap:1.71,interval:379,bR:13,
-    reward:'❤ 穩紮穩打！獲得雙倍生命開場',
-    boss:null
-  },
-  {
-    name:'第二十關',sub:'油滋滋亂流',
-    diff:'rabbit2',dur:32,scoreTarget:550,lives:3,bombs:2,
-    patterns:['triple','angled','zigzag','boomerang','bounce','meteor'],speed:7.2,speedCap:1.74,interval:360,bR:13,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🍗 雞塊 Rabbit 江'
-  },
-  {
-    name:'第二十一關',sub:'幻影追逐',
-    diff:'mouse',dur:33,scoreTarget:600,lives:3,bombs:2,
-    patterns:['homing','clone','zigzag'],speed:7.5,speedCap:1.77,interval:342,bR:13,
-    reward:'🛡 護盾4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第二十二關',sub:'分身突襲',
-    diff:'mouse',dur:34,scoreTarget:650,lives:3,bombs:2,
-    patterns:['homing','clone','zigzag','fan'],speed:7.7,speedCap:1.81,interval:325,bR:12,
-    reward:'⭐ 雙倍分數15秒加成',
-    boss:null
-  },
-  {
-    name:'第二十三關',sub:'螺旋律動',
-    diff:'mouse',dur:35,scoreTarget:720,lives:3,bombs:2,
-    patterns:['homing','clone','zigzag','fan','spiral'],speed:8,speedCap:1.84,interval:309,bR:12,
-    reward:'🧲 磁鐵加成12秒開場',
-    boss:null
-  },
-  {
-    name:'第二十四關',sub:'扇形壓制',
-    diff:'mouse',dur:36,scoreTarget:780,lives:3,bombs:2,
-    patterns:['homing','clone','zigzag','fan','spiral','pursuit'],speed:8.2,speedCap:1.87,interval:294,bR:12,
-    reward:'❄ 冰凍4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第二十五關',sub:'幻影終曲',
-    diff:'mouse',dur:37,scoreTarget:860,lives:3,bombs:2,
-    patterns:['homing','clone','zigzag','fan','spiral','pursuit'],speed:8.5,speedCap:1.91,interval:279,bR:12,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🐭 Mouse 陳'
-  },
-  {
-    name:'第二十六關',sub:'幾何極光',
-    diff:'dora',dur:38,scoreTarget:940,lives:3,bombs:2,
-    patterns:['ring','orbit','column'],speed:8.7,speedCap:1.94,interval:265,bR:12,
-    reward:'🎆 Combo保持12秒開場',
-    boss:null
-  },
-  {
-    name:'第二十七關',sub:'圓環軌道',
-    diff:'dora',dur:39,scoreTarget:1000,lives:3,bombs:2,
-    patterns:['ring','orbit','column','cross'],speed:9,speedCap:1.98,interval:252,bR:12,
-    reward:'💣 清屏大炸彈開場',
-    boss:null
-  },
-  {
-    name:'第二十八關',sub:'縱列橫掃',
-    diff:'dora',dur:40,scoreTarget:1100,lives:2,bombs:2,
-    patterns:['ring','orbit','column','cross','sweep'],speed:9.2,speedCap:2.01,interval:240,bR:12,
-    reward:'❤ 穩紮穩打！獲得雙倍生命開場',
-    boss:null
-  },
-  {
-    name:'第二十九關',sub:'十字交鋒',
-    diff:'dora',dur:41,scoreTarget:1200,lives:2,bombs:2,
-    patterns:['ring','orbit','column','cross','sweep','aiming_triple'],speed:9.5,speedCap:2.04,interval:228,bR:12,
-    reward:'💥 補給到位！炸彈補滿',
-    boss:null
-  },
-  {
-    name:'第三十關',sub:'幾何審判',
-    diff:'dora',dur:42,scoreTarget:1350,lives:2,bombs:2,
-    patterns:['ring','orbit','column','cross','sweep','aiming_triple'],speed:9.7,speedCap:2.08,interval:216,bR:11,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🔵 Dora 陳'
-  },
-  {
-    name:'第三十一關',sub:'加特林狂潮',
-    diff:'glasses',dur:43,scoreTarget:1450,lives:2,bombs:2,
-    patterns:['wall','gatling','helix'],speed:10,speedCap:2.11,interval:206,bR:11,
-    reward:'⭐ 雙倍分數15秒加成',
-    boss:null
-  },
-  {
-    name:'第三十二關',sub:'金屬風暴',
-    diff:'glasses',dur:43,scoreTarget:1600,lives:2,bombs:2,
-    patterns:['wall','gatling','helix','barrage'],speed:10.2,speedCap:2.14,interval:195,bR:11,
-    reward:'🧲 磁鐵加成12秒開場',
-    boss:null
-  },
-  {
-    name:'第三十三關',sub:'螺旋彈幕',
-    diff:'glasses',dur:44,scoreTarget:1750,lives:2,bombs:2,
-    patterns:['wall','gatling','helix','barrage','bounce'],speed:10.5,speedCap:2.18,interval:186,bR:11,
-    reward:'❄ 冰凍4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第三十四關',sub:'彈牆封鎖',
-    diff:'glasses',dur:45,scoreTarget:1900,lives:2,bombs:2,
-    patterns:['wall','gatling','helix','barrage','bounce','nova'],speed:10.8,speedCap:2.21,interval:176,bR:11,
-    reward:'🌀 縮小特效6秒開場',
-    boss:null
-  },
-  {
-    name:'第三十五關',sub:'玻璃碎片',
-    diff:'glasses',dur:46,scoreTarget:2100,lives:2,bombs:2,
-    patterns:['wall','gatling','helix','barrage','bounce','nova','curtain'],speed:11,speedCap:2.24,interval:168,bR:11,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🕶 Glasses 陳'
-  },
-  {
-    name:'第三十六關',sub:'遠古法陣',
-    diff:'wizard',dur:47,scoreTarget:2300,lives:2,bombs:1,
-    patterns:['flower','chakram','shuriken'],speed:11.3,speedCap:2.28,interval:159,bR:11,
-    reward:'💣 清屏大炸彈開場',
-    boss:null
-  },
-  {
-    name:'第三十七關',sub:'花瓣咒術',
-    diff:'wizard',dur:48,scoreTarget:2500,lives:2,bombs:1,
-    patterns:['flower','chakram','shuriken','vortex'],speed:11.5,speedCap:2.31,interval:151,bR:11,
-    reward:'❤ 穩紮穩打！獲得雙倍生命開場',
-    boss:null
-  },
-  {
-    name:'第三十八關',sub:'飛輪連鎖',
-    diff:'wizard',dur:49,scoreTarget:2750,lives:2,bombs:1,
-    patterns:['flower','chakram','shuriken','vortex','web'],speed:11.8,speedCap:2.35,interval:144,bR:10,
-    reward:'💥 補給到位！炸彈補滿',
-    boss:null
-  },
-  {
-    name:'第三十九關',sub:'漩渦禁區',
-    diff:'wizard',dur:50,scoreTarget:3000,lives:2,bombs:1,
-    patterns:['flower','chakram','shuriken','vortex','web','delayed'],speed:12,speedCap:2.38,interval:137,bR:10,
-    reward:'🛡 護盾4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第四十關',sub:'魔導終局',
-    diff:'wizard',dur:51,scoreTarget:3250,lives:2,bombs:1,
-    patterns:['flower','chakram','shuriken','vortex','web','delayed','hydra'],speed:12.3,speedCap:2.41,interval:130,bR:10,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🧙 巫師 Glasses 陳'
-  },
-  {
-    name:'第四十一關',sub:'鼠王親征',
-    diff:'mouseking',dur:52,scoreTarget:3600,lives:2,bombs:1,
-    patterns:['snipe','aiming_triple','arrow'],speed:12.5,speedCap:2.45,interval:123,bR:10,
-    reward:'🧲 磁鐵加成12秒開場',
-    boss:null
-  },
-  {
-    name:'第四十二關',sub:'精準狙擊',
-    diff:'mouseking',dur:53,scoreTarget:3900,lives:2,bombs:1,
-    patterns:['snipe','aiming_triple','arrow','side_burst'],speed:12.8,speedCap:2.48,interval:117,bR:10,
-    reward:'❄ 冰凍4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第四十三關',sub:'天羅地網',
-    diff:'mouseking',dur:54,scoreTarget:4300,lives:2,bombs:1,
-    patterns:['snipe','aiming_triple','arrow','side_burst','pincer'],speed:13,speedCap:2.51,interval:111,bR:10,
-    reward:'🌀 縮小特效6秒開場',
-    boss:null
-  },
-  {
-    name:'第四十四關',sub:'側翼包夾',
-    diff:'mouseking',dur:54,scoreTarget:4700,lives:2,bombs:1,
-    patterns:['snipe','aiming_triple','arrow','side_burst','pincer','pursuit'],speed:13.3,speedCap:2.55,interval:106,bR:10,
-    reward:'🎆 Combo保持12秒開場',
-    boss:null
-  },
-  {
-    name:'第四十五關',sub:'王者降臨',
-    diff:'mouseking',dur:55,scoreTarget:5100,lives:1,bombs:1,
-    patterns:['snipe','aiming_triple','arrow','side_burst','pincer','pursuit','claymore'],speed:13.5,speedCap:2.58,interval:101,bR:10,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'👑 鼠王陳'
-  },
-  {
-    name:'第四十六關',sub:'末日狂嵐',
-    diff:'gugu',dur:56,scoreTarget:5600,lives:1,bombs:1,
-    patterns:['nova','helix','spiral'],speed:13.8,speedCap:2.62,interval:96,bR:9,
-    reward:'❤ 穩紮穩打！獲得雙倍生命開場',
-    boss:null
-  },
-  {
-    name:'第四十七關',sub:'地裂奇點',
-    diff:'gugu',dur:57,scoreTarget:6100,lives:1,bombs:1,
-    patterns:['nova','helix','spiral','burst'],speed:14,speedCap:2.65,interval:91,bR:9,
-    reward:'💥 補給到位！炸彈補滿',
-    boss:null
-  },
-  {
-    name:'第四十八關',sub:'混沌亂舞',
-    diff:'gugu',dur:58,scoreTarget:6700,lives:1,bombs:1,
-    patterns:['nova','helix','spiral','burst','earthquake'],speed:14.3,speedCap:2.68,interval:86,bR:9,
-    reward:'🛡 護盾4秒加成開場',
-    boss:null
-  },
-  {
-    name:'第四十九關',sub:'咕咕審判',
-    diff:'gugu',dur:59,scoreTarget:7300,lives:1,bombs:1,
-    patterns:['nova','helix','spiral','burst','earthquake','random_walk'],speed:14.5,speedCap:2.72,interval:82,bR:9,
-    reward:'⭐ 雙倍分數15秒加成',
-    boss:null
-  },
-  {
-    name:'第五十關',sub:'終極神魔審判',
-    diff:'eason',dur:60,scoreTarget:8000,lives:1,bombs:1,
-    patterns:ALL_PATS,speed:14.8,speedCap:2.75,interval:78,bR:9,
-    reward:'👑 通關獎勵：滿血滿彈 + 護盾開場',
-    boss:'🎤 Eason 陳 (終極型態)'
-  }
-];
+const STAGES=(function(){
+  const NAMES=['第一關','第二關','第三關','第四關','第五關',
+    '第六關','第七關','第八關','第九關','第十關',
+    '第十一關','第十二關','第十三關','第十四關','第十五關',
+    '第十六關','第十七關','第十八關','第十九關','第二十關',
+    '第二十一關','第二十二關','第二十三關','第二十四關','第二十五關',
+    '第二十六關','第二十七關','第二十八關','第二十九關','第三十關',
+    '第三十一關','第三十二關','第三十三關','第三十四關','第三十五關',
+    '第三十六關','第三十七關','第三十八關','第三十九關','第四十關',
+    '第四十一關','第四十二關','第四十三關','第四十四關','第四十五關',
+    '第四十六關','第四十七關','第四十八關','第四十九關','第五十關'];
+  const SUBS=['緩速入門','直線練習','雙發鞏固','斜角突破','第一章終',
+    '扇形初體驗','三連節奏','波浪加壓','速度提升','第二章終',
+    '多發散射','彈雨初見','追蹤登場','螺旋節奏','第三章終',
+    '爆裂衝擊','齊射排陣','十字夾擊','精準狙擊','第四章終',
+    '漏斗收斂','收斂突襲','立柱橫掃','矩陣迷陣','第五章終',
+    '隕石來襲','密集彈幕','連發掃射','高壓混合','第六章終',
+    '花瓣旋轉','螺旋雙臂','脈衝連擊','旋轉飛輪','第七章終',
+    '手裡劍陣','交錯夾攻','九頭龍分裂','交叉劍陣','第八章終',
+    '蜘蛛網張開','重力拋物','鐘擺律動','延遲詭局','第九章終',
+    '三重鎖定','急追加速','隨機遊走','混沌亂流','終極審判'];
+  const DIFF_KEYS=['rabbit','rabbit','rabbit','rabbit','rabbit',
+    'happy','happy','happy','happy','happy',
+    'piha','piha','piha','piha','piha',
+    'rabbit2','rabbit2','rabbit2','rabbit2','rabbit2',
+    'mouse','mouse','mouse','mouse','mouse',
+    'dora','dora','dora','dora','dora',
+    'glasses','glasses','glasses','glasses','glasses',
+    'wizard','wizard','wizard','wizard','wizard',
+    'mouseking','mouseking','mouseking','mouseking','mouseking',
+    'gugu','gugu','gugu','gugu','eason'];
+  const BAG=['shield','heart','slow','bomb','bigbomb','double','magnet','freeze','mini','combolock'];
+  // 累積彈幕池（每達到閾值加入新彈幕組）
+  const TIERS=[
+    ['straight','double','angled'],
+    ['fan','triple','wave'],
+    ['zigzag','ring','homing'],
+    ['rain','bounce','spiral'],
+    ['burst','barrage','cross'],
+    ['snipe','funnel','inward'],
+    ['column','sweep','matrix'],
+    ['meteor','curtain','gatling'],
+    ['flower','helix','pulse'],
+    ['chakram','shuriken','stagger'],
+    ['hydra','claymore','web'],
+    ['gravity','pendulum','delayed'],
+    ['aiming_triple','pursuit','random_walk','chaos']
+  ];
+  const THRESHOLDS=[0,3,6,10,14,18,22,26,30,34,38,42,46];
+  const stages=NAMES.map((name,i)=>{
+    let pats=[];
+    for(let t=0;t<THRESHOLDS.length;t++){if(i>=THRESHOLDS[t])pats=pats.concat(TIERS[t]);}
+    return{
+      name,sub:SUBS[i],diff:DIFF_KEYS[i],
+      dur:i<25?45:30,lives:2,bombs:2,
+      speed:+(4.7+(i/49)*7.6).toFixed(1),
+      speedCap:+(2.0-(i/49)*0.9).toFixed(2),
+      interval:Math.round(600-(i/49)*470),
+      bR:Math.round(14-(i/49)*4),
+      patterns:pats,
+      bagItem:BAG[i%10]
+    };
+  });
+  // 第50關增強
+  Object.assign(stages[49],{speed:14.0,interval:100,speedCap:1.25,bR:9});
+  // 第51關（隱藏）
+  stages.push({
+    name:'第五十一關',sub:'傳說・天選之境',
+    diff:'eason',dur:60,lives:1,bombs:0,
+    speed:12.3,speedCap:1.1,interval:130,bR:10,
+    patterns:[...stages[49].patterns,'boomerang','wall','laser','comet','arrow'],
+    bagItem:null,isSecret:true
+  });
+  return stages;
+})();
 
 function saveStageClear(idx){
   if(!stageBestClears.includes(idx)){stageBestClears.push(idx);}
@@ -1587,9 +1446,11 @@ function saveStageClear(idx){
   saveGame();
 }
 function resetProgress(){
-  if(!confirm('確定要清除所有存檔進度嗎？（已解鎖關卡與最高分將全部歸零，無法復原）'))return;
+  if(!confirm('確定要清除所有存檔進度嗎？（已解鎖關卡、最高分、星星、包包將全部歸零，無法復原）'))return;
   stageBestClears.length=0;stageBest={};DKEYS.forEach(k=>bests[k]=0);
-  try{localStorage.removeItem('bhStageClears');localStorage.removeItem(SAVE_KEY);}catch(e){}
+  stageStarsEarned={};bagItems=[];
+  try{localStorage.removeItem('bhStageClears');localStorage.removeItem(SAVE_KEY);
+      localStorage.removeItem('bhStarsV1');localStorage.removeItem('bhBagV1');}catch(e){}
   rebuildStageGrid();showNotif('🗑 存檔已重置','#ff2d78');
 }
 
@@ -1605,13 +1466,13 @@ function buildStageUI(){
     <div class="sh">說明</div>
     <div class="hp" style="max-width:740px;width:100%">
       <div class="hg">
-        <div class="hi"><div class="hii">⏱</div><div class="hit"><b>限時生存</b>：撐過規定秒數即過關</div></div>
-        <div class="hi"><div class="hii">🎯</div><div class="hit"><b>分數目標</b>：同時需達到分數門檻</div></div>
-        <div class="hi"><div class="hii">🎁</div><div class="hit"><b>通關獎勵</b>：每關有特殊加成帶入下一關</div></div>
+        <div class="hi"><div class="hii">⏱</div><div class="hit"><b>限時生存</b>：撐過規定秒數即過關（前25關45秒，後25關30秒）</div></div>
+        <div class="hi"><div class="hii">★</div><div class="hit"><b>綠色星星</b>：每關3顆，從上方掉落，全收集解鎖第51關</div></div>
+        <div class="hi"><div class="hii">🎒</div><div class="hit"><b>包包</b>：通關獎勵道具存入包包，開局前選一件使用</div></div>
         <div class="hi"><div class="hii">💀</div><div class="hit"><b>失敗重試</b>：可從同一關重新開始</div></div>
         <div class="hi"><div class="hii">🔒</div><div class="hit"><b>逐關解鎖</b>：通過前一關才能挑戰下一關</div></div>
-        <div class="hi"><div class="hii">💾</div><div class="hit"><b>自動存檔</b>：進度與最高分自動保存於本機</div></div>
-        <div class="hi"><div class="hii">👑</div><div class="hit">第50關通關獲得<b>永久傳說稱號</b></div></div>
+        <div class="hi"><div class="hii">💾</div><div class="hit"><b>自動存檔</b>：進度、星星、包包自動保存於本機</div></div>
+        <div class="hi"><div class="hii">👑</div><div class="hit">第50關通關獲得<b>傳說稱號</b>；全50關★★★解鎖<b>第51關</b></div></div>
       </div>
     </div>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
@@ -1624,29 +1485,39 @@ function buildStageUI(){
   rebuildStageGrid();
 }
 
+function checkStarUnlock(){
+  return true; // TEST: always unlocked
+  for(let i=0;i<50;i++)if((stageStarsEarned[i]||0)<3)return false;
+  return true;
+}
+
 function rebuildStageGrid(){
   const grid=document.getElementById('stage-grid');if(!grid)return;
   grid.innerHTML='';
+  const showSecret=checkStarUnlock();
   STAGES.forEach((st,i)=>{
-    const cleared=stageBestClears.includes(i);
-    const locked=!(i===0||stageBestClears.includes(i-1));
+    if(st.isSecret&&!showSecret)return; // 第51關隱藏
+    const cleared=stageBestClears.includes(i)||(st.isSecret); // 第51關不需解鎖顯示
+    const locked=!st.isSecret&&!(i===0||stageBestClears.includes(i-1));
+    const starCount=stageStarsEarned[i]||0;
+    const starStr='★'.repeat(starCount)+'☆'.repeat(3-starCount);
+    const starCol=starCount===3?'#39ff14':starCount>0?'#ffd700':'rgba(255,255,255,.25)';
     const btn=document.createElement('button');
-    btn.style.cssText=`padding:12px 10px 30px;border-radius:12px;border:1px solid ${
-      cleared?'rgba(255,215,0,.5)':locked?'rgba(255,255,255,.08)':'rgba(255,255,255,.18)'
-    };background:${cleared?'rgba(255,215,0,.07)':locked?'rgba(0,0,0,.2)':'var(--panel)'};
+    btn.style.cssText=`padding:12px 10px 32px;border-radius:12px;border:1px solid ${
+      st.isSecret?'rgba(57,255,20,.55)':cleared?'rgba(255,215,0,.5)':locked?'rgba(255,255,255,.08)':'rgba(255,255,255,.18)'
+    };background:${st.isSecret?'rgba(57,255,20,.05)':cleared?'rgba(255,215,0,.07)':locked?'rgba(0,0,0,.2)':'var(--panel)'};
     color:#fff;cursor:${locked?'default':'pointer'};text-align:left;position:relative;
-    transition:border-color .18s,transform .13s;-webkit-appearance:none;opacity:${locked?.45:1}`;
+    transition:border-color .18s,transform .13s;-webkit-appearance:none;appearance:none;opacity:${locked?.45:1}`;
     btn.innerHTML=`
-      <span style="position:absolute;top:7px;right:8px;font-size:.5rem;font-family:Orbitron,monospace;color:${cleared?'#ffd700':'rgba(255,255,255,.3)'}">${cleared?'✓ CLEAR':'#'+(i+1)}</span>
-      <span style="display:block;font-family:Orbitron,monospace;font-size:.78rem;font-weight:700;color:${cleared?'#ffd700':locked?'rgba(255,255,255,.3)':'#fff'};margin-bottom:3px">${locked?'🔒 ':cleared?'⭐ ':''}${st.name}</span>
+      <span style="position:absolute;top:7px;right:8px;font-size:.52rem;color:${starCol}">${starStr}</span>
+      <span style="display:block;font-family:Orbitron,monospace;font-size:.78rem;font-weight:700;color:${st.isSecret?'#39ff14':cleared?'#ffd700':locked?'rgba(255,255,255,.3)':'#fff'};margin-bottom:3px">${locked?'🔒 ':cleared?'✓ ':st.isSecret?'★ ':''}${st.name}</span>
       <span style="display:block;font-size:.6rem;color:rgba(255,255,255,.42);margin-bottom:4px">${st.sub}</span>
-      <span style="font-size:.55rem;color:rgba(255,255,255,.3)">⏱${st.dur}秒 · 🎯${st.scoreTarget.toLocaleString()}分 · ❤${st.lives} 💥${st.bombs}</span>
+      <span style="font-size:.55rem;color:rgba(255,255,255,.3)">⏱${st.dur}秒 · ❤${st.lives} 💥${st.bombs}</span>
       <div style="position:absolute;bottom:9px;left:9px;display:flex;gap:3px;flex-wrap:wrap">
         <span style="font-size:.48rem;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.32)">${DIFF[st.diff].label.split(' ')[0]}</span>
       </div>`;
-    
     btn.addEventListener('click',()=>{ if(locked){showNotif('🔒 請先通過前一關！','#ff2d78');return;} startStage(i); });
-    btn.addEventListener('mouseenter',()=>{btn.style.transform='translateY(-2px)';});
+    btn.addEventListener('mouseenter',()=>{if(!locked)btn.style.transform='translateY(-2px)';});
     btn.addEventListener('mouseleave',()=>{btn.style.transform='';});
     grid.appendChild(btn);
   });
@@ -1656,12 +1527,12 @@ function showStageMenu(){
   clearStartCountdown();
   gstate='menu';
   clearTimeout(spawnTO);if(raf){cancelAnimationFrame(raf);raf=null;}
+  cleanupGameDOM();
   stageMode=false;
   mnUI.style.display='none';goUI.style.display='none';puUI.style.display='none';
   dbBm.style.display='none';dbPs.style.display='none';
   const sm=document.getElementById('stage-menu');
   if(sm){sm.style.display='flex';rebuildStageGrid();}
-  ctx.clearRect(0,0,W(),H());
 }
 
 let stageTimerEl=null,stageGoalEl=null;
@@ -1677,8 +1548,8 @@ function buildStageHUD(){
     </div>
     <div style="width:1px;height:24px;background:rgba(255,255,255,.12)"></div>
     <div style="display:flex;flex-direction:column;align-items:center">
-      <span style="font-size:.5rem;color:rgba(255,255,255,.38);letter-spacing:2px">GOAL</span>
-      <span id="st-goal" style="font-family:Orbitron,monospace;font-size:.85rem;color:#ffd700">0</span>
+      <span style="font-size:.5rem;color:rgba(255,255,255,.38);letter-spacing:2px">STARS</span>
+      <span id="st-goal" style="font-size:.85rem;color:#39ff14">☆☆☆</span>
     </div>
     <div style="width:1px;height:24px;background:rgba(255,255,255,.12)"></div>
     <div style="display:flex;flex-direction:column;align-items:center">
@@ -1694,17 +1565,27 @@ let stageCfgOverride=null;
 
 function startStage(idx){
   clearStartCountdown();
-  stageIdx=idx;stageMode=true;lastWasStage=true;slowFactor=1;
-  if(idx>0 && !stageBestClears.includes(idx-1)){showNotif('🔒 請先通過前一關！','#ff2d78');showStageMenu();return;}
-  const st=STAGES[idx];
+  // 解鎖檢查（第51關特殊處理）
+  if(idx===50&&!checkStarUnlock()){showNotif('★ 收集全50關各3顆星才能解鎖！','#39ff14');showStageMenu();return;}
+  if(idx>0&&idx!==50&&!stageBestClears.includes(idx-1)){showNotif('🔒 請先通過前一關！','#ff2d78');showStageMenu();return;}
   const sm=document.getElementById('stage-menu');if(sm)sm.style.display='none';
+  // 有包包道具時先顯示選擇畫面
+  if(bagItems.length>0){
+    showBagSelect(idx);
+    return;
+  }
+  _doStartStage(idx,null);
+}
+
+function _doStartStage(idx,preloadItem){
+  stageIdx=idx;stageMode=true;lastWasStage=true;slowFactor=1;
+  const st=STAGES[idx];
 
   const baseCfg=DIFF[st.diff];
   const stageCfg={
     ...baseCfg,
     speed:st.speed,speedCap:st.speedCap,interval:st.interval,bR:st.bR,
-    patterns:st.patterns,
-    lives:st.lives,bombs:st.bombs
+    patterns:st.patterns,lives:st.lives,bombs:st.bombs
   };
 
   lastDiff=st.diff;
@@ -1721,20 +1602,18 @@ function startStage(idx){
   [comboTO,doubleTO,frozenTO,miniTO,comboLockTO,slowTO].forEach(t=>clearTimeout(t));
   player.x=W()/2;player.y=H()*.82;
   stageTimer=st.dur;
+  // 星星初始化
+  stageStarsCollected=0;stageElapsed=0;
+  const dur=st.dur;
+  stageStarTimes=[rand(dur*.12,dur*.3),rand(dur*.38,dur*.58),rand(dur*.65,dur*.88)].sort((a,b)=>a-b);
 
-  // 關卡模式強制禁用無敵模式
-  invincible = false;
-  if($('itog')) $('itog').classList.remove('on');
-
+  invincible=false;if($('itog'))$('itog').classList.remove('on');
   stageCfgOverride=stageCfg;
 
-  buildHUD();
-  buildStageHUD();
+  buildHUD();buildStageHUD();
 
-  if(idx>0){
-    const prev=STAGES[idx-1];
-    applyStageReward(prev.reward,idx);
-  }
+  // 套用包包道具（開局前）
+  if(preloadItem) applyItemByType(preloadItem);
 
   hdDif.textContent=st.name+' '+st.sub.slice(0,8)+'…';
   hdDif.style.background=baseCfg.bc;hdDif.style.border=`1px solid ${baseCfg.color}44`;hdDif.style.color=baseCfg.color;
@@ -1744,7 +1623,6 @@ function startStage(idx){
   else{dbBm.style.display='flex';dbPs.style.display='flex';dbPs.textContent='⏸';}
 
   clearTimeout(spawnTO);if(raf){cancelAnimationFrame(raf);raf=null;}
-  
   startWithCountdown(true);
 }
 
@@ -1761,10 +1639,10 @@ function startWithCountdown(isStageMode) {
   const st = stageMode ? STAGES[stageIdx] : null;
   const titleText = isStageMode ? `${st.name}` : `${DIFF[lastDiff].label}`;
   const subText = isStageMode ? `${st.sub}` : `${DIFF[lastDiff].desc}`;
-  const targetLabel = isStageMode ? `⏱ 生存：${st.dur}秒  ·  🎯 目標：${st.scoreTarget.toLocaleString()}分` : `🔥 挑戰極限自由生存`;
+  const targetLabel = isStageMode ? `⏱ 生存：${st.dur}秒  ·  ★ 收集3顆綠色星星！` : `🔥 挑戰極限自由生存`;
 
   banner.innerHTML = `
-    <div style="font-family:Orbitron,monospace;font-size:clamp(.7rem,2vw,1rem);color:rgba(255,255,255,.4);letter-spacing:4px">${isStageMode ? `STAGE ${stageIdx+1} / ${STAGES.length}` : 'FREE PLAY'}</div>
+    <div style="font-family:Orbitron,monospace;font-size:clamp(.7rem,2vw,1rem);color:rgba(255,255,255,.4);letter-spacing:4px">${isStageMode ? (stageIdx===50?'★ SECRET STAGE':`STAGE ${stageIdx+1} / 50`) : 'FREE PLAY'}</div>
     <div style="font-family:Orbitron,monospace;font-size:clamp(1.4rem,4vw,2.8rem);font-weight:900;color:#fff;text-align:center">${titleText}</div>
     <div style="font-size:clamp(.8rem,2vw,1.1rem);color:rgba(255,255,255,.55)">${subText}</div>
     <div style="margin-top:12px;font-size:1.1rem;color:var(--g);text-align:center;font-weight:700">${targetLabel}</div>
@@ -1836,7 +1714,10 @@ function scheduleSpawnStage(){
   const cfg=stageCfgOverride||DIFF[lastDiff];
   const delay=Math.max(50,cfg.interval/(speedM*slowFactor));
   spawnTO=setTimeout(()=>{
-    if(gstate==='playing'){spawnWaveStage();scheduleSpawnStage();}
+    if(gstate==='playing'){
+      if(stageIdx===50)spawnWaveStage51();else spawnWaveStage();
+      scheduleSpawnStage();
+    }
   },delay);
 }
 
@@ -1906,22 +1787,19 @@ function spawnPatternWith(pat,spd,r,cfg,w,h){
     case 'side_burst':for(let i=0;i<5;i++){addB(-r,rand(h*.1,h*.7),spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);addB(w+r,rand(h*.1,h*.7),-spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);}break;
     case 'delayed':{const cnt=randInt(3,6);for(let i=0;i<cnt;i++)setTimeout(()=>{if(gstate==='playing')addB(rand(r+20,w-r-20),-r-5,rand(-.4,.4),spd,r,cfg);},i*180);break;}
     case 'pursuit':{const b=addBx(rand(r+20,w-r-20),-r-5,0,spd*.5,r,cfg);b.pursuit=true;b.pursuitAcc=0;break;}
-    case 'chaos':{const types2=['straight','double','burst','homing','rain','snipe','side_burst','nova','fan','triple'];spawnPatternDirect(pick(types2),spd,r,cfg,w,h);break;}
+    case 'chaos':{const types2=['straight','double','fan','wave','triple'];spawnPatternWith(pick(types2),spd,r,cfg,w,h);break;}
+    case 'funnel':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.88;const ang=Math.atan2(h*0.75,(w/2)-bx);addB(bx,-r-5,Math.cos(ang)*spd,Math.sin(ang)*spd,r,cfg);});break;}
+    case 'inward':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.85;addB(bx,-r-5,(w/2-bx)/(h*0.7)*spd,spd,r,cfg);});break;}
+    case 'pulse':{const px=rand(r+30,w-r-30);for(let i=0;i<4;i++)setTimeout(()=>{if(gstate==='playing')addB(px,-r-5,rand(-.15,.15),spd,r*.9,cfg);},i*55);break;}
+    case 'stagger':{for(let i=0;i<6;i++){const bx=(i+.5)*w/6;addB(bx,-r-5-(i%2===0?0:22),0,spd,r*.82,cfg);}break;}
+    case 'cascade':{for(let i=0;i<8;i++)setTimeout(()=>{if(gstate==='playing')addB((i+.5)*w/8,-r-5,0,spd*.9,r*.78,cfg);},i*50);break;}
+    case 'chevron':{const cx=rand(100,w-100);addB(cx,-r-5,0,spd,r,cfg);for(let i=1;i<=3;i++){addB(cx-i*26,-r-5-i*14,0,spd*.95,r,cfg);addB(cx+i*26,-r-5-i*14,0,spd*.95,r,cfg);}break;}
   }
 }
 
-function applyStageReward(reward,idx){
-  if(!reward)return;
-  if(reward.includes('雙倍生命')){lives=Math.min(lives+2,maxLives+2);maxLives=Math.max(maxLives,lives);refLives();buildHUD();}
-  if(reward.includes('炸彈補滿')){bombs=maxBombs;refBombs();}
-  if(reward.includes('護盾')){iframes=Math.max(iframes,360);}
-  if(reward.includes('雙倍分數')){doubleOn=true;clearTimeout(doubleTO);doubleTO=setTimeout(()=>doubleOn=false,15000);}
-  if(reward.includes('磁鐵')){magnetOn=true;setTimeout(()=>magnetOn=false,12000);}
-  if(reward.includes('大炸彈')){bombs=Math.min(bombs+1,maxBombs+1);maxBombs=Math.max(maxBombs,bombs);refBombs();buildHUD();}
-  if(reward.includes('縮小')){miniOn=true;setTimeout(()=>miniOn=false,6000);}
-  if(reward.includes('Combo')){comboLockOn=true;clearTimeout(comboLockTO);comboLockTO=setTimeout(()=>comboLockOn=false,12000);}
-  if(reward.includes('滿血滿彈')){lives=maxLives;bombs=maxBombs;refLives();refBombs();}
-  if(reward.includes('冰凍')){frozenOn=true;clearTimeout(frozenTO);frozenTO=setTimeout(()=>frozenOn=false,4000);}
+function applyItemByType(type){
+  if(!type)return;
+  applyItem({type,x:player.x,y:player.y,r:16,age:0,bob:0});
 }
 
 function loopStage(ts){
@@ -1932,11 +1810,18 @@ function loopStage(ts){
 
   const st=STAGES[stageIdx];
   const cfg=stageCfgOverride||DIFF[lastDiff];
-  const mult=(doubleOn?2:1)*comboMult;
-  
+  // 關卡模式不使用 comboMult
+  const mult=(doubleOn?2:1);
+
   if(!isStartingCount) {
     score+=dt*mult;
     stageTimer=Math.max(0,stageTimer-dt/60);
+    stageElapsed+=dt/60;
+    // 星星生成檢查
+    while(stageStarTimes.length&&stageElapsed>=stageStarTimes[0]){
+      stageStarTimes.shift();
+      items.push({x:rand(35,W()-35),y:-28,dy:1.5+speedM*.15,type:'starGreen',r:20,age:0,bob:Math.random()*Math.PI*2});
+    }
   }
   const si=Math.floor(score);
 
@@ -1946,9 +1831,8 @@ function loopStage(ts){
     stageTimerEl.style.color=t<=10?'#ff2d78':t<=20?'#ffd700':'#00f5ff';
   }
   if(stageGoalEl){
-    const goal=st.scoreTarget;
-    stageGoalEl.textContent=`${si.toLocaleString()}/${goal.toLocaleString()}`;
-    stageGoalEl.style.color=si>=goal?'#39ff14':'#ffd700';
+    stageGoalEl.textContent='★'.repeat(stageStarsCollected)+'☆'.repeat(3-stageStarsCollected);
+    stageGoalEl.style.color='#39ff14';
   }
 
   speedM=Math.min(cfg.speedCap,1+Math.floor(si/300)*cfg.accelAmt);
@@ -1956,15 +1840,15 @@ function loopStage(ts){
 
   const ph=getPhase(si);$phb.textContent=ph;hdPh.textContent=ph;
   hdSc.textContent=si.toLocaleString();mbSc.textContent=si.toLocaleString();
-  
+
   if(!isStartingCount) {
     chkMile(si);
     if(iframes>0)iframes=Math.max(0,iframes-dt*60);
   }
 
+  // 純時間制：時間到即過關
   if(!isStartingCount && stageTimer<=0){
-    if(si>=st.scoreTarget){stageClear();}
-    else{stageFail();}
+    stageClear();
     return;
   }
 
@@ -1993,10 +1877,19 @@ function renderFrame(dt){
     
     if(!isStartingCount && Math.hypot(ddx,ddy)<it.r+player.r+5){applyItem(it);items.splice(i,1);continue;}
     if(it.y>h+40){items.splice(i,1);continue;}
-    ctx.beginPath();ctx.arc(it.x+bx,it.y,it.r+5,0,Math.PI*2);ctx.strokeStyle=ICOLOR[it.type]+'50';ctx.lineWidth=2;ctx.stroke();
-    ctx.font=`${it.r*1.75}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(IEMOJI[it.type],it.x+bx,it.y);
-    const iLbl={heart:'+命',bomb:'+彈',slow:'減速',shield:'護盾',double:'×2分',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸',mini:'縮小',combolock:'Combo'};
-    ctx.font='9px Noto Sans TC';ctx.fillStyle='rgba(255,255,255,.38)';ctx.fillText(iLbl[it.type]||'',it.x+bx,it.y+it.r+8);
+    if(it.type==='starGreen'){
+      ctx.save();ctx.translate(it.x+bx,it.y);
+      ctx.shadowBlur=18;ctx.shadowColor='#39ff14';
+      ctx.fillStyle='#39ff14';drawStar5(ctx,0,0,it.r,it.r*.42);
+      ctx.shadowBlur=0;ctx.font='9px Noto Sans TC';ctx.textAlign='center';ctx.textBaseline='top';
+      ctx.fillStyle='rgba(57,255,20,.8)';ctx.fillText('★',0,it.r+4);
+      ctx.restore();
+    }else{
+      ctx.beginPath();ctx.arc(it.x+bx,it.y,it.r+5,0,Math.PI*2);ctx.strokeStyle=ICOLOR[it.type]+'50';ctx.lineWidth=2;ctx.stroke();
+      ctx.font=`${it.r*1.75}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(IEMOJI[it.type],it.x+bx,it.y);
+      const iLbl={heart:'+命',bomb:'+彈',slow:'減速',shield:'護盾',double:'×2分',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸',mini:'縮小',combolock:'Combo'};
+      ctx.font='9px Noto Sans TC';ctx.fillStyle='rgba(255,255,255,.38)';ctx.fillText(iLbl[it.type]||'',it.x+bx,it.y+it.r+8);
+    }
   }
 
   if(!isStartingCount) {
@@ -2056,30 +1949,142 @@ function renderFrame(dt){
     if(b.meteor){ctx.beginPath();ctx.arc(b.x,b.y,r+6,0,Math.PI*2);ctx.strokeStyle=b.bFill+'22';ctx.lineWidth=3;ctx.stroke();}
     if(b.countdown&&!b.cdBurst){const progress=b.cdTimer/45;ctx.beginPath();ctx.arc(b.x,b.y,r+8,-.5*Math.PI,-.5*Math.PI+progress*Math.PI*2);ctx.strokeStyle='#ff4444bb';ctx.lineWidth=3;ctx.stroke();}
     if(b.homing){const ang=Math.atan2(b.dy,b.dx);ctx.save();ctx.translate(b.x,b.y);ctx.rotate(ang);ctx.beginPath();ctx.moveTo(r+5,0);ctx.lineTo(r+11,-4);ctx.lineTo(r+11,4);ctx.fillStyle=b.bFill+'99';ctx.fill();ctx.restore();}
-    // 彈幕標示
+    // 彈幕圖形標示
     if(b.pat){
-      const PAT_LABEL={
-        straight:'直',double:'雙',triple:'三',angled:'斜',fan:'扇',homing:'追',
-        burst:'炸',wave:'波',spiral:'旋',cross:'十',snipe:'狙',boomerang:'迴',
-        rain:'雨',wall:'牆',zigzag:'鋸',ring:'環',barrage:'排',matrix:'陣',
-        vortex:'渦',bounce:'彈',meteor:'隕',web:'網',laser:'射',gravity:'弧',
-        pendulum:'擺',comet:'彗',grid:'格',flower:'花',orbit:'繞',countdown:'炸',
-        earthquake:'震',column:'柱',sweep:'掃',pincer:'鉗',curtain:'幕',gatling:'連',
-        helix:'螺',nova:'新',claymore:'劍',random_walk:'隨',clone:'分',arrow:'箭',
-        chakram:'輪',shuriken:'鏢',hydra:'龍',aiming_triple:'三鎖',side_burst:'側炸',
-        delayed:'遲',pursuit:'急',chaos:'亂'
-      };
-      const lbl=PAT_LABEL[b.pat];
-      if(lbl){
-        ctx.save();
-        ctx.font=`bold ${Math.max(7,r*.85)}px 'Noto Sans TC',sans-serif`;
-        ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillStyle='rgba(0,0,0,0.55)';
-        ctx.fillText(lbl,b.x+.5,b.y+.5);
-        ctx.fillStyle='rgba(255,255,255,0.92)';
-        ctx.fillText(lbl,b.x,b.y);
-        ctx.restore();
+      ctx.save();
+      const s=Math.max(3,r*.55);
+      const x=b.x,y=b.y;
+      ctx.strokeStyle='rgba(255,255,255,0.85)';
+      ctx.fillStyle='rgba(255,255,255,0.85)';
+      ctx.lineWidth=Math.max(1,r*.11);
+      ctx.lineCap='round';ctx.lineJoin='round';
+      switch(b.pat){
+        case 'straight':
+          ctx.beginPath();ctx.moveTo(x,y-s);ctx.lineTo(x,y+s);ctx.stroke();break;
+        case 'angled':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y+s*.7);ctx.lineTo(x+s*.7,y-s*.7);ctx.stroke();break;
+        case 'laser':
+          ctx.beginPath();ctx.moveTo(x-s,y);ctx.lineTo(x+s,y);ctx.stroke();break;
+        case 'double':
+          ctx.beginPath();ctx.arc(x-s*.45,y,s*.3,0,Math.PI*2);ctx.fill();
+          ctx.beginPath();ctx.arc(x+s*.45,y,s*.3,0,Math.PI*2);ctx.fill();break;
+        case 'triple':case 'aiming_triple':
+          for(let k=-1;k<=1;k++){ctx.beginPath();ctx.arc(x+k*s*.5,y,s*.28,0,Math.PI*2);ctx.fill();}break;
+        case 'rain':case 'barrage':
+          [-s*.4,s*.4].forEach(dx=>[-s*.4,s*.4].forEach(dy=>{ctx.beginPath();ctx.arc(x+dx,y+dy,s*.22,0,Math.PI*2);ctx.fill();}));break;
+        case 'fan':
+          ctx.beginPath();ctx.arc(x,y+s*.25,s*.78,-Math.PI*.85,-Math.PI*.15);ctx.stroke();break;
+        case 'burst':
+          for(let k=0;k<4;k++){const a=k*Math.PI/2;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*s*.32,y+Math.sin(a)*s*.32);ctx.lineTo(x+Math.cos(a)*s*.82,y+Math.sin(a)*s*.82);ctx.stroke();}break;
+        case 'homing':case 'pursuit':
+          ctx.beginPath();ctx.arc(x,y,s*.55,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.18,0,Math.PI*2);ctx.fill();break;
+        case 'snipe':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x+s*.7,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y-s*.7);ctx.lineTo(x,y+s*.7);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.32,0,Math.PI*2);ctx.stroke();break;
+        case 'cross':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x+s*.7,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y-s*.7);ctx.lineTo(x,y+s*.7);ctx.stroke();break;
+        case 'spiral':
+          ctx.beginPath();ctx.arc(x,y,s*.52,-Math.PI*.5,Math.PI*.7);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.24,-Math.PI*.5,Math.PI*.2);ctx.stroke();break;
+        case 'wave':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);
+          ctx.quadraticCurveTo(x-s*.35,y-s*.55,x,y);
+          ctx.quadraticCurveTo(x+s*.35,y+s*.55,x+s*.7,y);ctx.stroke();break;
+        case 'zigzag':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y+s*.4);ctx.lineTo(x-s*.2,y-s*.4);ctx.lineTo(x+s*.25,y+s*.4);ctx.lineTo(x+s*.7,y-s*.4);ctx.stroke();break;
+        case 'ring':
+          ctx.beginPath();ctx.arc(x,y,s*.55,0,Math.PI*2);ctx.stroke();break;
+        case 'bounce':
+          ctx.beginPath();ctx.moveTo(x-s*.6,y+s*.5);ctx.lineTo(x,y-s*.4);ctx.lineTo(x+s*.6,y+s*.5);ctx.stroke();break;
+        case 'boomerang':
+          ctx.beginPath();ctx.arc(x,y+s*.2,s*.6,Math.PI*1.1,Math.PI*1.9);ctx.stroke();break;
+        case 'gravity':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y-s*.4);ctx.quadraticCurveTo(x,y-s*.5,x+s*.7,y+s*.5);ctx.stroke();break;
+        case 'pendulum':
+          ctx.beginPath();ctx.moveTo(x,y-s*.6);ctx.lineTo(x,y+s*.2);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y+s*.42,s*.25,0,Math.PI*2);ctx.fill();break;
+        case 'wall':case 'curtain':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y-s*.22);ctx.lineTo(x+s*.7,y-s*.22);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.7,y+s*.22);ctx.lineTo(x+s*.7,y+s*.22);ctx.stroke();break;
+        case 'matrix':case 'grid':
+          [-s*.38,s*.38].forEach(dx=>[-s*.38,s*.38].forEach(dy=>{ctx.beginPath();ctx.arc(x+dx,y+dy,s*.18,0,Math.PI*2);ctx.fill();}));break;
+        case 'column':
+          [-s*.45,0,s*.45].forEach(dx=>{ctx.beginPath();ctx.moveTo(x+dx,y-s*.52);ctx.lineTo(x+dx,y+s*.52);ctx.stroke();});break;
+        case 'sweep':
+          [-s*.4,0,s*.4].forEach(dy=>{ctx.beginPath();ctx.moveTo(x-s*.58,y+dy);ctx.lineTo(x+s*.58,y+dy);ctx.stroke();});break;
+        case 'pincer':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y-s*.4);ctx.lineTo(x,y+s*.35);ctx.lineTo(x+s*.7,y-s*.4);ctx.stroke();break;
+        case 'flower':
+          for(let k=0;k<4;k++){const a=k*Math.PI/2;ctx.beginPath();ctx.arc(x+Math.cos(a)*s*.42,y+Math.sin(a)*s*.42,s*.24,0,Math.PI*2);ctx.fill();}break;
+        case 'chakram':
+          ctx.beginPath();ctx.ellipse(x,y,s*.65,s*.3,Math.PI/4,0,Math.PI*2);ctx.stroke();break;
+        case 'helix':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y-s*.32);ctx.bezierCurveTo(x-s*.35,y-s*.7,x+s*.35,y+s*.7,x+s*.7,y+s*.32);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.7,y+s*.32);ctx.bezierCurveTo(x-s*.35,y+s*.7,x+s*.35,y-s*.7,x+s*.7,y-s*.32);ctx.stroke();break;
+        case 'claymore':
+          ctx.beginPath();ctx.moveTo(x-s*.62,y-s*.62);ctx.lineTo(x+s*.62,y+s*.62);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.62,y-s*.62);ctx.lineTo(x-s*.62,y+s*.62);ctx.stroke();break;
+        case 'web':
+          ctx.beginPath();ctx.moveTo(x-s*.55,y-s*.55);ctx.lineTo(x+s*.55,y+s*.55);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.55,y-s*.55);ctx.lineTo(x-s*.55,y+s*.55);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.4,0,Math.PI*2);ctx.stroke();break;
+        case 'clone':
+          ctx.beginPath();ctx.arc(x-s*.28,y,s*.38,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.arc(x+s*.28,y,s*.38,0,Math.PI*2);ctx.stroke();break;
+        case 'arrow':
+          ctx.beginPath();ctx.moveTo(x,y-s*.62);ctx.lineTo(x,y+s*.42);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.45,y-s*.1);ctx.lineTo(x,y-s*.62);ctx.lineTo(x+s*.45,y-s*.1);ctx.stroke();break;
+        case 'gatling':
+          [-s*.45,0,s*.45].forEach(dy=>{ctx.beginPath();ctx.arc(x,y+dy,s*.22,0,Math.PI*2);ctx.fill();});break;
+        case 'random_walk':
+          ctx.beginPath();ctx.arc(x,y,s*.48,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.12,0,Math.PI*2);ctx.fill();break;
+        case 'hydra':
+          ctx.beginPath();ctx.moveTo(x,y+s*.5);ctx.lineTo(x,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-s*.52,y-s*.52);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+s*.52,y-s*.52);ctx.stroke();break;
+        case 'delayed':
+          ctx.beginPath();ctx.arc(x,y,s*.55,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-s*.42);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+s*.3,y+s*.22);ctx.stroke();break;
+        case 'earthquake':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x-s*.35,y-s*.5);ctx.lineTo(x,y+s*.5);ctx.lineTo(x+s*.35,y-s*.5);ctx.lineTo(x+s*.7,y);ctx.stroke();break;
+        case 'side_burst':
+          ctx.beginPath();ctx.moveTo(x-s*.3,y);ctx.lineTo(x-s*.75,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.75,y);ctx.lineTo(x-s*.52,y-s*.3);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.75,y);ctx.lineTo(x-s*.52,y+s*.3);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.3,y);ctx.lineTo(x+s*.75,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.75,y);ctx.lineTo(x+s*.52,y-s*.3);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.75,y);ctx.lineTo(x+s*.52,y+s*.3);ctx.stroke();break;
+        case 'chaos':
+          for(let k=0;k<3;k++){const a=k*Math.PI/3;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*s*.65,y+Math.sin(a)*s*.65);ctx.lineTo(x-Math.cos(a)*s*.65,y-Math.sin(a)*s*.65);ctx.stroke();}break;
+        case 'funnel':
+          ctx.beginPath();ctx.moveTo(x-s*.62,y-s*.42);ctx.lineTo(x,y+s*.42);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.62,y-s*.42);ctx.lineTo(x,y+s*.42);ctx.stroke();break;
+        case 'inward':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x-s*.18,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-s*.18,y);ctx.lineTo(x-s*.38,y-s*.28);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.7,y);ctx.lineTo(x+s*.18,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.18,y);ctx.lineTo(x+s*.38,y-s*.28);ctx.stroke();break;
+        case 'pulse':
+          ctx.beginPath();ctx.moveTo(x,y-s*.55);ctx.lineTo(x,y+s*.55);ctx.stroke();
+          ctx.beginPath();ctx.arc(x,y,s*.18,0,Math.PI*2);ctx.fill();break;
+        case 'stagger':
+          ctx.beginPath();ctx.arc(x-s*.38,y-s*.22,s*.22,0,Math.PI*2);ctx.fill();
+          ctx.beginPath();ctx.arc(x+s*.38,y+s*.22,s*.22,0,Math.PI*2);ctx.fill();break;
+        case 'cascade':
+          ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x+s*.7,y);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.7,y);ctx.lineTo(x+s*.4,y-s*.3);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+s*.7,y);ctx.lineTo(x+s*.4,y+s*.3);ctx.stroke();break;
+        case 'chevron':
+          ctx.beginPath();ctx.moveTo(x-s*.6,y+s*.35);ctx.lineTo(x,y-s*.4);ctx.lineTo(x+s*.6,y+s*.35);ctx.stroke();break;
+        default:
+          ctx.beginPath();ctx.arc(x,y,s*.25,0,Math.PI*2);ctx.fill();break;
       }
+      ctx.restore();
     }
     
     if(!isStartingCount && sweptCollide(b,dt)){
@@ -2105,24 +2110,35 @@ function renderFrame(dt){
 function stageClear(){
   clearStartCountdown();
   gstate='over';clearTimeout(spawnTO);if(raf){cancelAnimationFrame(raf);raf=null;}
-  saveStageClear(stageIdx);
+  // 不記錄第51關進度（隱藏關）
+  if(!STAGES[stageIdx].isSecret) saveStageClear(stageIdx);
   document.getElementById('stage-hud-extra')?.remove();
   const st=STAGES[stageIdx];
   const _clearScore=Math.floor(score);
   if(!stageBest[stageIdx]||_clearScore>stageBest[stageIdx]){stageBest[stageIdx]=_clearScore;saveGame();}
-  const isLast=stageIdx===STAGES.length-1;
-  goT.textContent = isLast ? '👑 宇宙唯一的至尊傳奇！' : '✅ 關卡通過！';
-  goT.style.color=isLast?'#ffd700':'#39ff14';
-  goSc.textContent=`得分：${Math.floor(score).toLocaleString()} · ${st.name} 完成！`;
+  // 儲存星星
+  stageStarsEarned[stageIdx]=Math.max(stageStarsEarned[stageIdx]||0,stageStarsCollected);
+  saveStarData();
+  // 通關獎勵道具存入包包
+  if(st.bagItem){bagItems.push(st.bagItem);saveBagData();}
+
+  const isLast=stageIdx===49; // 第50關才算"最後一關"
+  const isSecret=!!st.isSecret;
+  goT.textContent=isSecret?'★ 傳說達成！你是唯一！':isLast?'👑 宇宙唯一的至尊傳奇！':'✅ 關卡通過！';
+  goT.style.color=isSecret?'#39ff14':isLast?'#ffd700':'#39ff14';
+  goSc.textContent=`得分：${_clearScore.toLocaleString()} · ${st.name} 完成！`;
   goBv.textContent=(stageBest[stageIdx]||0).toLocaleString();
+  goSt.style.gridTemplateColumns='repeat(2,1fr)';
   goSt.innerHTML=`
-    <div class="gs"><div class="gs-v">${statDodge}</div><div class="gs-l">DODGED</div></div>
-    <div class="gs"><div class="gs-v">${statCombo}</div><div class="gs-l">MAX COMBO</div></div>
     <div class="gs"><div class="gs-v">${statItem}</div><div class="gs-l">ITEMS</div></div>
     <div class="gs"><div class="gs-v">${statHit}</div><div class="gs-l">HITS</div></div>`;
-  goMd.innerHTML=`<div class="md gd">🎁 ${st.reward}</div>${isLast?'<div class="md gd">👑 傳說稱號解鎖！</div>':''}`;
+  const starStr='★'.repeat(stageStarsCollected)+'☆'.repeat(3-stageStarsCollected);
+  const starColor=stageStarsCollected===3?'#39ff14':stageStarsCollected>0?'#ffd700':'rgba(255,255,255,.3)';
+  goMd.innerHTML=`<div class="md gd" style="font-size:.95rem;letter-spacing:4px;color:${starColor}">${starStr}</div>`+
+    (st.bagItem?`<div class="md gd">🎁 ${IEMOJI[st.bagItem]} 加入包包</div>`:'')+(isLast?'<div class="md gd">👑 傳說稱號解鎖！</div>':'')+
+    (checkStarUnlock()&&!isSecret?'<div class="md gd" style="color:#39ff14">★ 第51關解鎖！</div>':'');
   const nextIdx=stageIdx+1;
-  const canNext=!isLast;
+  const canNext=!isLast&&!isSecret&&nextIdx<STAGES.length-1;
   document.querySelector('#go .go-bn').innerHTML=`
     ${canNext?`<button class="gb pri" onclick="startStage(${nextIdx})">下一關 → ${STAGES[nextIdx].name}</button>`:''}
     <button class="gb" onclick="startStage(${stageIdx})">再挑一次 (R)</button>
@@ -2137,17 +2153,16 @@ function stageFail(){
   document.getElementById('stage-hud-extra')?.remove();
   const st=STAGES[stageIdx];
   const si=Math.floor(score);
-  const metScore=si>=st.scoreTarget;
   if(!stageBest[stageIdx]||si>stageBest[stageIdx]){stageBest[stageIdx]=si;saveGame();}
   goT.textContent='💀 關卡失敗';goT.style.color='#ff2d78';
-  goSc.textContent=`得分：${si.toLocaleString()} / 目標 ${st.scoreTarget.toLocaleString()}${metScore?' ✓ 達標':''}`;
+  goSc.textContent=`得分：${si.toLocaleString()} · 生存 ${Math.round(st.dur-Math.max(0,stageTimer))}/${st.dur} 秒`;
   goBv.textContent=(stageBest[stageIdx]||0).toLocaleString();
+  goSt.style.gridTemplateColumns='repeat(2,1fr)';
   goSt.innerHTML=`
-    <div class="gs"><div class="gs-v">${statDodge}</div><div class="gs-l">DODGED</div></div>
-    <div class="gs"><div class="gs-v">${statCombo}</div><div class="gs-l">MAX COMBO</div></div>
     <div class="gs"><div class="gs-v">${statItem}</div><div class="gs-l">ITEMS</div></div>
     <div class="gs"><div class="gs-v">${statHit}</div><div class="gs-l">HITS</div></div>`;
-  goMd.innerHTML=`<div class="md">⏱ 生存時間：${Math.round(st.dur-Math.max(0,stageTimer))}/${st.dur}秒</div>`;
+  const starStr='★'.repeat(stageStarsCollected)+'☆'.repeat(3-stageStarsCollected);
+  goMd.innerHTML=`<div class="md" style="color:#39ff14">${starStr}</div>`;
   document.querySelector('#go .go-bn').innerHTML=`
     <button class="gb pri" onclick="startStage(${stageIdx})">重試本關 (R)</button>
     <button class="gb" onclick="showStageMenu()">關卡選單 (Esc)</button>`;
@@ -2156,6 +2171,96 @@ function stageFail(){
 }
 
 buildStageUI();
+
+// ══ 5角星繪製輔助 ══
+function drawStar5(ctx,cx,cy,R,r){
+  ctx.beginPath();
+  for(let k=0;k<10;k++){
+    const a=k*Math.PI/5-Math.PI/2;
+    const rad=k%2===0?R:r;
+    if(k===0)ctx.moveTo(cx+Math.cos(a)*rad,cy+Math.sin(a)*rad);
+    else ctx.lineTo(cx+Math.cos(a)*rad,cy+Math.sin(a)*rad);
+  }
+  ctx.closePath();ctx.fill();
+}
+
+// ══ 包包選擇畫面 ══
+function showBagSelect(targetIdx){
+  document.getElementById('bag-select')?.remove();
+  const div=document.createElement('div');
+  div.id='bag-select';div.className='ov';
+  div.innerHTML=`<div class="obg"></div>
+  <div class="goi">
+    <div style="font-family:Orbitron,monospace;font-size:1.5rem;font-weight:900;color:var(--g);margin-bottom:6px">選擇開局道具</div>
+    <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:22px">BAG · 選一件帶入本關（用後消耗）</div>
+    <div id="bag-item-grid" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:380px;margin-bottom:22px"></div>
+    <div style="display:flex;gap:9px;flex-direction:column;max-width:220px;width:100%">
+      <button class="gb pri" id="bag-confirm-btn" style="opacity:.45;pointer-events:none" onclick="confirmBagSelect(${targetIdx})">確認使用</button>
+      <button class="gb" onclick="confirmBagSelect(${targetIdx},null,true)">不帶道具，直接開始</button>
+    </div>
+  </div>`;
+  document.getElementById('wrap').appendChild(div);
+  div.style.display='flex';
+  mnUI.style.display='none';goUI.style.display='none';
+  // 填充道具格子
+  const grid=document.getElementById('bag-item-grid');
+  const counts={};bagItems.forEach(t=>counts[t]=(counts[t]||0)+1);
+  Object.entries(counts).forEach(([type,count])=>{
+    const inames={heart:'生命+1',bomb:'炸彈+1',slow:'減速',shield:'護盾',double:'雙倍分',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸彈',mini:'縮小',combolock:'Combo保'};
+    const btn=document.createElement('button');
+    btn.dataset.type=type;
+    btn.style.cssText='width:74px;height:74px;border-radius:12px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .15s;-webkit-appearance:none;appearance:none';
+    btn.innerHTML=`<span style="font-size:1.65rem">${IEMOJI[type]}</span><span style="font-size:.5rem;color:rgba(255,255,255,.5)">${inames[type]||type}${count>1?' ×'+count:''}</span>`;
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#bag-item-grid button').forEach(b=>{b.style.borderColor='rgba(255,255,255,.2)';b.style.background='rgba(255,255,255,.04)';});
+      btn.style.borderColor='var(--c)';btn.style.background='rgba(0,245,255,.1)';
+      const cb=document.getElementById('bag-confirm-btn');
+      cb.style.opacity='1';cb.style.pointerEvents='auto';
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function confirmBagSelect(targetIdx,type,skip){
+  if(!skip){
+    const sel=document.querySelector('#bag-item-grid button[style*="var(--c)"]');
+    if(sel)type=sel.dataset.type;
+    if(type){const idx=bagItems.indexOf(type);if(idx>=0)bagItems.splice(idx,1);saveBagData();}
+  }
+  document.getElementById('bag-select')?.remove();
+  _doStartStage(targetIdx,skip?null:type);
+}
+
+// ══ Stage 51 四方向生成 ══
+function spawnWaveStage51(){
+  if(isStartingCount)return;
+  const cfg=stageCfgOverride||DIFF[lastDiff];
+  const spd=cfg.speed*speedM;
+  const r=cfg.bR;
+  const w=W(),h=H();
+  if(Math.random()<0.025)spawnItem();
+  const edge=Math.floor(Math.random()*4); // 0=top,1=bottom,2=left,3=right
+  const pat=pick(cfg.patterns);
+  _spawnPat=pat;
+  if(edge===0){
+    spawnPatternWith(pat,spd,r,cfg,w,h); // 正常上方
+  }else if(edge===1){
+    // 下方向上：選一個簡單彈幕，翻轉 y 座標與 dy
+    const cx=rand(r+20,w-r-20);
+    const count=Math.floor(Math.random()*3)+1;
+    for(let i=0;i<count;i++)addB(cx+rand(-30,30),h+r+5,rand(-.4,.4),-spd,r,cfg);
+  }else if(edge===2){
+    // 左方向右
+    const cy=rand(h*.15,h*.75);
+    const count=Math.floor(Math.random()*3)+1;
+    for(let i=0;i<count;i++)addB(-r-5,cy+rand(-25,25),spd,rand(-.3,.3),r,cfg);
+  }else{
+    // 右方向左
+    const cy=rand(h*.15,h*.75);
+    const count=Math.floor(Math.random()*3)+1;
+    for(let i=0;i<count;i++)addB(w+r+5,cy+rand(-25,25),-spd,rand(-.3,.3),r,cfg);
+  }
+}
 </script>
 </body>
 </html>
