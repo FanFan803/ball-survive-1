@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>彈幕生存 v4.2</title>
+<title>彈幕生存 v4.3.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;user-select:none}
@@ -425,7 +425,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   <div id="mnp-home" class="mn-page active">
     <div class="oi" style="justify-content:center">
       <div class="logo logo-anim" style="margin-top:32px">彈幕生存</div>
-      <div class="logo-s">BULLET HELL SURVIVAL · v4.2</div>
+      <div class="logo-s">BULLET HELL SURVIVAL · v4.3.1</div>
       <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:30px">
         <button class="mb-nav pri" onclick="showMenuPage('mnp-free')">
           <span class="mn-icon">▶</span>
@@ -494,19 +494,26 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
         </div>
       </div>
 
-      <div class="sh">道具說明 ITEMS (10種)</div>
+      <div class="sh">道具說明 ITEMS (15種)</div>
       <div class="hp">
         <div class="hg">
           <div class="hi"><div class="hii">❤</div><div class="hit"><b>生命+1</b>：恢復一條命（可超上限+1）</div></div>
           <div class="hi"><div class="hii">💥</div><div class="hit"><b>炸彈+1</b>：補充一顆炸彈</div></div>
           <div class="hi"><div class="hii">🐢</div><div class="hit"><b>減速5秒</b>：所有子彈變慢</div></div>
-          <div class="hi"><div class="hii">🛡</div><div class="hit"><b>護盾4秒</b>：臨時無敵</div></div>
-          <div class="hi"><div class="hii">⭐</div><div class="hit"><b>雙倍分10秒</b>：分數×2</div></div>
+          <div class="hi"><div class="hii">🛡</div><div class="hit"><b>護盾8秒</b>：臨時無敵</div></div>
           <div class="hi"><div class="hii">🧲</div><div class="hit"><b>磁鐵8秒</b>：自動吸附道具</div></div>
           <div class="hi"><div class="hii">❄</div><div class="hit"><b>冰凍3秒</b>：子彈暫停移動</div></div>
-          <div class="hi"><div class="hii">💣</div><div class="hit"><b>大炸彈</b>：清屏+3秒護盾</div></div>
+          <div class="hi"><div class="hii">💣</div><div class="hit"><b>大炸彈</b>：清屏+護盾8秒</div></div>
           <div class="hi"><div class="hii">🌀</div><div class="hit"><b>縮小5秒</b>：玩家縮小碰撞減半</div></div>
-          <div class="hi"><div class="hii">🎆</div><div class="hit"><b>Combo延長</b>：Combo不斷條10秒</div></div>
+          <div class="hi"><div class="hii">💊</div><div class="hit"><b>大力丸8秒</b>：碰到彈幕使其消失</div></div>
+          <div class="hi"><div class="hii">🔥</div><div class="hit"><b>狂暴5秒</b>：炸彈不消耗，可無限使用</div></div>
+          <div class="hi"><div class="hii">🔺</div><div class="hit"><b>放大5秒</b>：玩家變大，碰撞範圍×1.8 😂</div></div>
+          <div class="hi"><div class="hii">💨</div><div class="hit"><b>加速5秒</b>：所有子彈速度×1.8 😱</div></div>
+          <div class="hi"><div class="hii">➕</div><div class="hit"><b>加時+10秒</b>：關卡計時增加（僅關卡模式）</div></div>
+          <div class="hi"><div class="hii">➖</div><div class="hit"><b>減時-8秒</b>：關卡計時減少！（僅關卡模式）😈</div></div>
+          <div class="hi"><div class="hii">🪙</div><div class="hit"><b>金幣</b>：即時 +50分</div></div>
+          <div class="hi"><div class="hii">💎</div><div class="hit"><b>寶石</b>：即時 +150分（較少見）</div></div>
+          <div class="hi"><div class="hii">🎁</div><div class="hit"><b>禮物</b>：即時 +300分（稀有）</div></div>
         </div>
       </div>
 
@@ -608,113 +615,121 @@ const goT=$('go-t'),goSc=$('go-sc'),goBv=$('go-bv'),goSt=$('go-st'),goMd=$('go-m
 const puD=$('pu-d'),puBm=$('pu-bm');
 const $mile=$('mile'),$nf=$('nf'),$phb=$('phb');
 
-const DKEYS=['rabbit','happy','piha','rabbit2','mouse','dora','glasses','wizard','mouseking','gugu','eason'];
+const DKEYS=['rabbit','happy','piha','rabbit2','mouse','dora','glasses','wizard','mouseking','gugu','eason','811'];
 const ALL_PATS=['straight','double','triple','angled','fan','homing','burst','wave','spiral','cross',
   'snipe','boomerang','rain','wall','zigzag','ring','barrage','matrix','funnel','bounce',
   'meteor','web','laser','gravity','pendulum','comet','grid','flower','inward','countdown',
   'cascade','column','sweep','stagger','curtain','gatling','helix','pulse','claymore','random_walk',
-  'clone','arrow','chakram','shuriken','hydra','aiming_triple','chevron','delayed','pursuit','chaos'];
+  'clone','arrow','chakram','shuriken','hydra','aiming_triple','chevron','delayed','twin_burst','chaos'];
 
 const DIFF={
   rabbit:{
     label:'🐰 Rabbit 江',color:'#00f5ff',bc:'rgba(0,245,255,.22)',
     lv:'LV 1',lives:3,bombs:3,
-    interval:850,speed:2.8,speedCap:1.4,accelStep:500,accelAmt:.04,
-    patterns:['straight','angled','double'],
+    interval:850,speed:2.8,speedCap:2.7,accelStep:500,accelAmt:.04,
+    patterns:['straight','double','angled'],
     bR:14,bFill:'#00f5ff',bRim:'#004455',
     death:'🐰 Rabbit 江跑跑掉了…',winCol:'#00f5ff',
-    desc:'入門·緩速直線·給第一次玩的你'
+    desc:'入門·直線·雙發·3種彈幕輕鬆入門'
   },
   happy:{
     label:'🐮 Happy 牛',color:'#39ff14',bc:'rgba(57,255,20,.18)',
     lv:'LV 2',lives:3,bombs:3,
-    interval:650,speed:4.0,speedCap:1.6,accelStep:420,accelAmt:.05,
+    interval:650,speed:4.0,speedCap:2.5,accelStep:420,accelAmt:.05,
     patterns:['straight','double','angled','fan','triple'],
     bR:13,bFill:'#39ff14',bRim:'#104400',
     death:'🐮 Happy 牛把你頂飛了！',winCol:'#39ff14',
-    desc:'雙發扇形·稍有壓力·適合練習'
+    desc:'扇形·三連·5種彈幕·稍有壓力'
   },
   piha:{
     label:'🦜 皮哈 Happy 牛',color:'#ffb6c1',bc:'rgba(255,182,193,.18)',
     lv:'LV 2.5',lives:3,bombs:3,
-    interval:550,speed:4.8,speedCap:1.8,accelStep:400,accelAmt:.055,
-    patterns:['straight','double','triple','fan','rain','wave'],
+    interval:550,speed:4.8,speedCap:2.4,accelStep:400,accelAmt:.055,
+    patterns:['straight','double','angled','fan','triple','wave','rain'],
     bR:12,bFill:'#ffb6c1',bRim:'#660030',
     death:'🦜 皮哈牛啄到你了！',winCol:'#ffb6c1',
-    desc:'多發散射·活潑不規則·皮哈皮哈'
+    desc:'波浪·彈雨·7種彈幕·活潑皮哈'
   },
   rabbit2:{
     label:'🍗 雞塊 Rabbit 江',color:'#ffa500',bc:'rgba(255,165,0,.18)',
     lv:'LV 3',lives:3,bombs:2,
-    interval:480,speed:5.5,speedCap:1.9,accelStep:360,accelAmt:.06,
-    patterns:['straight','double','triple','angled','boomerang','zigzag','meteor'],
+    interval:480,speed:5.5,speedCap:2.3,accelStep:360,accelAmt:.06,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring'],
     bR:12,bFill:'#ffa500',bRim:'#552200',
     death:'🍗 雞塊滾回回去烘烤了…',winCol:'#ffa500',
-    desc:'迴旋鏢·鋸齒·大隕石·油滋滋'
+    desc:'鋸齒·圓環·9種彈幕·節奏加快'
   },
   mouse:{
     label:'🐭 Mouse 陳',color:'#a855f7',bc:'rgba(168,85,247,.2)',
     lv:'LV 4',lives:2,bombs:2,
-    interval:360,speed:7.0,speedCap:2.1,accelStep:310,accelAmt:.065,
-    patterns:['straight','double','triple','homing','fan','spiral','zigzag','clone','pursuit'],
+    interval:360,speed:7.0,speedCap:2.2,accelStep:310,accelAmt:.065,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst'],
     bR:11,bFill:'#d89cf6',bRim:'#4a0085',
     death:'🐭 Mouse 陳跑太快了…',winCol:'#a855f7',
-    desc:'追蹤·螺旋·分身·真正考驗開始'
+    desc:'齊射·爆裂·11種彈幕·真正考驗'
   },
   dora:{
     label:'🔵 Dora 陳',color:'#00bfff',bc:'rgba(0,191,255,.18)',
     lv:'LV 4.5',lives:2,bombs:2,
-    interval:300,speed:8.0,speedCap:2.2,accelStep:280,accelAmt:.07,
-    patterns:['straight','double','triple','fan','cross','ring','funnel','column','sweep','aiming_triple'],
+    interval:300,speed:8.0,speedCap:2.1,accelStep:280,accelAmt:.07,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column'],
     bR:11,bFill:'#00bfff',bRim:'#003055',
     death:'🔵 Dora 陳：道具在我口袋！',winCol:'#00bfff',
-    desc:'圓環·漏斗·橫掃·幾何密集彈'
+    desc:'十字·立柱·13種彈幕·幾何壓制'
   },
   glasses:{
     label:'🕶 Glasses 陳',color:'#ff8c00',bc:'rgba(255,140,0,.18)',
     lv:'LV 5',lives:2,bombs:2,
-    interval:230,speed:9.5,speedCap:2.3,accelStep:250,accelAmt:.07,
-    patterns:['straight','double','triple','homing','burst','wave','wall','bounce','ring','meteor','helix','pulse','gatling'],
+    interval:230,speed:9.5,speedCap:2.0,accelStep:250,accelAmt:.07,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column','sweep','spiral'],
     bR:10,bFill:'#ffbb44',bRim:'#6a3000',
     death:'🕶 Glasses 陳讓你看清現實了',winCol:'#ff8c00',
-    desc:'爆裂·彈牆·螺旋·高壓密集混合'
+    desc:'橫掃·螺旋·15種彈幕·高壓混合'
   },
   wizard:{
     label:'🧙 巫師 Glasses 陳',color:'#b464ff',bc:'rgba(180,100,255,.18)',
     lv:'LV 6',lives:2,bombs:1,
-    interval:180,speed:11.0,speedCap:2.4,accelStep:220,accelAmt:.07,
-    patterns:['homing','burst','spiral','inward','flower','funnel','chakram','shuriken','hydra','delayed','chaos'],
+    interval:180,speed:11.0,speedCap:1.9,accelStep:220,accelAmt:.07,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column','sweep','spiral','homing','snipe'],
     bR:10,bFill:'#cc88ff',bRim:'#3d0075',
     death:'🧙 巫師施法：你消失了',winCol:'#b464ff',
-    desc:'收斂·漏斗·花瓣·魔法圓陣特殊彈'
+    desc:'追蹤·狙擊·17種彈幕·魔法圓陣'
   },
   mouseking:{
     label:'👑 MouseKing 陳',color:'#ff4444',bc:'rgba(255,50,50,.18)',
     lv:'LV 7',lives:1,bombs:2,
-    interval:150,speed:12.0,speedCap:2.5,accelStep:200,accelAmt:.065,
-    patterns:['straight','double','homing','snipe','barrage','matrix','curtain','stagger','claymore','arrow','chevron'],
+    interval:150,speed:12.0,speedCap:1.8,accelStep:200,accelAmt:.065,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column','sweep','spiral','homing','snipe','funnel','inward'],
     bR:9,bFill:'#ff6666',bRim:'#6b0000',
     death:'👑 鼠王陳：稱孤道寡！',winCol:'#ff4444',
-    desc:'狙擊·布陣·交錯·人字幾乎無法逃'
+    desc:'漏斗·收斂·19種彈幕·幾乎無處可逃'
   },
   gugu:{
     label:'🐔 GuGuEason 陳',color:'#ff2d78',bc:'rgba(255,45,120,.18)',
     lv:'LV 8',lives:1,bombs:1,
-    interval:110,speed:13.0,speedCap:2.6,accelStep:180,accelAmt:.06,
-    patterns:['snipe','burst','spiral','cross','barrage','cascade','pulse','gatling',
-               'helix','flower','hydra','aiming_triple','random_walk','pursuit','chaos'],
+    interval:110,speed:13.0,speedCap:1.6,accelStep:180,accelAmt:.06,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column','sweep','spiral','homing','snipe','funnel','inward','curtain','helix','pulse'],
     bR:9,bFill:'#ff6aa7',bRim:'#6a0028',
     death:'🐔 咕咕Eason：咕…你輸了',winCol:'#ff2d78',
-    desc:'超高速·全類型·近乎人類極限'
+    desc:'彈幕牆·螺旋·脈衝·22種·近乎極限'
   },
   eason:{
     label:'🎤 Eason 陳',color:'#ffd700',bc:'rgba(255,215,0,.15)',
     lv:'👑BOSS',lives:1,bombs:1,
-    interval:80,speed:14.5,speedCap:2.7,accelStep:160,accelAmt:.055,
-    patterns:ALL_PATS,
+    interval:80,speed:14.5,speedCap:1.4,accelStep:160,accelAmt:.055,
+    patterns:['straight','double','angled','fan','triple','wave','rain','zigzag','ring','barrage','burst','cross','column','sweep','spiral','homing','snipe','funnel','inward','curtain','helix','pulse','stagger','hydra','chaos'],
     bR:9,bFill:'#ffe566',bRim:'#604800',
     death:'🎤 Eason 陳：♪ 你已墜落 ♪',winCol:'#ffd700',
-    desc:'全50種彈幕·超高速·唯一死亡難度·祝你好運'
+    desc:'25種精選彈幕·超高速·巔峰挑戰'
+  },
+  '811':{
+    label:'🎵 811',color:'#ffd700',bc:'rgba(255,215,0,.2)',
+    lv:'★★★',lives:1,bombs:1,
+    interval:80,speed:14.5,speedCap:1.0,accelStep:99999,accelAmt:0,
+    patterns:ALL_PATS,
+    bR:9,bFill:'#ffe566',bRim:'#604800',
+    death:'🎵 811：你好，你好嗎，再見',winCol:'#ffd700',
+    desc:'全50種彈幕·固定極速·無加速·2000分解鎖'
   }
 };
 
@@ -735,29 +750,34 @@ const PAT_META={
   random_walk:['🎲','隨機遊走','不規則移動'],clone:['👥','分身','射後複製'],arrow:['🏹','箭形','V字飛來'],
   chakram:['🌐','飛輪','旋轉環形'],shuriken:['🌟','手裡劍','四角旋轉'],hydra:['🐉','九頭蛇','分裂再分裂'],
   aiming_triple:['🎯','三重瞄準','同時三顆追蹤'],chevron:['˄','人字','7發人字編隊'],
-  delayed:['⏳','延遲彈','延後再飛'],pursuit:['🏃','急追','加速追蹤'],chaos:['🌪','混沌','隨機一切']
+  delayed:['⏳','延遲彈','延後再飛'],twin_burst:['⋈','雙爆','左右雙爆發點'],chaos:['🌪','混沌','隨機一切']
 };
 
 (function buildMenu(){
   const dg=$('dg');
   DKEYS.forEach((k,idx)=>{
     const cfg=DIFF[k];
+    const unlocked811=k==='811'?(()=>{try{return is811Unlocked();}catch(e){return false;}})():true;
     const pats=cfg.patterns.map(p=>PAT_META[p]?PAT_META[p][1]:p);
-    const patStr=pats.slice(0,6).join('·')+(pats.length>6?`…+${pats.length-6}`:'');
+    const patStr=unlocked811?pats.slice(0,6).join('·')+(pats.length>6?`…+${pats.length-6}`:''):'???';
     const btn=document.createElement('button');
     btn.className='db'; btn.dataset.k=k;
     btn.setAttribute('onclick',`startGame('${k}')`);
+    if(k==='811'&&!unlocked811){
+      btn.style.opacity='0.42';
+      btn.style.cursor='not-allowed';
+    }
     btn.innerHTML=`
       <span class="db-lv">${cfg.lv} <span style="color:rgba(255,255,255,.18)">[${idx+1}]</span></span>
       <span class="db-pip"></span>
-      <span class="db-n">${cfg.label}</span>
-      <span class="db-d">${cfg.desc}</span>
+      <span class="db-n">${k==='811'&&!unlocked811?'🔒 ???':cfg.label}</span>
+      <span class="db-d">${k==='811'&&!unlocked811?'任意模式達2000分即可解鎖':cfg.desc}</span>
       <div class="pat-list"><b>彈幕：</b>${patStr}</div>
       <div class="db-tags">
         <span class="dt">${cfg.lives}命</span>
         <span class="dt">${cfg.bombs}彈</span>
-        <span class="dt">速限×${cfg.speedCap}</span>
-        <span class="dt">${cfg.patterns.length}種彈幕</span>
+        <span class="dt">速限×${unlocked811?cfg.speedCap:'?'}</span>
+        <span class="dt">${unlocked811?cfg.patterns.length:'?'}種彈幕</span>
       </div>`;
     dg.appendChild(btn);
   });
@@ -933,7 +953,12 @@ function clearStartCountdown(){
   document.getElementById('banner-start')?.remove();
 }
 
+function is811Unlocked(){
+  return DKEYS.filter(k=>k!=='811').every(k=>bests[k]>=2000);
+}
+
 function startGame(diff){
+  if(diff==='811'&&!is811Unlocked()){showNotif('🔒 任意模式達2000分即可解鎖！','#ffd700');return;}
   clearStartCountdown();
   lastDiff=diff;lastWasStage=false;slowFactor=1;
   const cfg=DIFF[diff];
@@ -946,8 +971,9 @@ function startGame(diff){
   player.trail=[];iframes=0;shakeF=0;
   mileset=new Set();
   magnetOn=false;doubleOn=false;frozenOn=false;miniOn=false;comboLockOn=false;
+  pillOn=false;frenzyOn=false;bigOn=false;speedBoostFactor=1;
   statDodge=0;statHit=0;statItem=0;statCombo=0;
-  [comboTO,doubleTO,frozenTO,miniTO,comboLockTO,slowTO].forEach(t=>clearTimeout(t));
+  [comboTO,doubleTO,frozenTO,miniTO,comboLockTO,slowTO,pillTO,frenzyTO,bigTO,speedupTO].forEach(t=>clearTimeout(t));
   player.x=W()/2; player.y=H()*.82;
   buildHUD();
   mnUI.style.display='none'; goUI.style.display='none'; puUI.style.display='none';
@@ -1045,8 +1071,8 @@ function quitMenu(){
 function useBomb(){
   if(gstate!=='playing'&&gstate!=='paused')return;
   if(isStartingCount)return; // 倒數中不可使用
-  if(bombs<=0){showNotif('沒有炸彈！','#ff2d78');return;}
-  bombs--;refBombs();
+  if(bombs<=0&&!frenzyOn){showNotif('沒有炸彈！','#ff2d78');return;}
+  if(!frenzyOn)bombs--;refBombs();
   for(const b of bullets)spawnP(b.x,b.y,b.bFill,5);
   bullets=[];
   shakeF=10;shakeStr=6;
@@ -1161,7 +1187,7 @@ function spawnWave(){
       angles.forEach(off=>{const a=Math.atan2(dy,dx)+off;addB(sx,sy,Math.cos(a)*spd,Math.sin(a)*spd,r,cfg);});break;}
     case 'side_burst':{for(let i=0;i<5;i++){addB(-r,rand(h*.1,h*.7),spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);addB(w+r,rand(h*.1,h*.7),-spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);}break;}
     case 'delayed':{const cnt=randInt(3,6);for(let i=0;i<cnt;i++)setTimeout(()=>{if(gstate==='playing')addB(rand(r+20,w-r-20),-r-5,rand(-.4,.4),spd,r,cfg);},i*180);break;}
-    case 'pursuit':{const b=addBx(rand(r+20,w-r-20),-r-5,0,spd*.5,r,cfg);b.pursuit=true;b.pursuitAcc=0;break;}
+    case 'twin_burst':{const lx=rand(r+20,w*.42),rx=rand(w*.58,w-r-20);for(let i=0;i<4;i++){const a=-Math.PI/2+((i-1.5)/3)*(Math.PI/2);addB(lx,-r-5,Math.cos(a)*spd*.65,Math.abs(Math.sin(a))*spd*.55+spd*.45,r*.82,cfg);addB(rx,-r-5,-Math.cos(a)*spd*.65,Math.abs(Math.sin(a))*spd*.55+spd*.45,r*.82,cfg);}break;}
     case 'chaos':{const types2=['straight','double','fan','wave','triple'];spawnPatternDirect(pick(types2),spd,r,cfg,w,h);break;}
     case 'funnel':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.88;const ang=Math.atan2(h*0.75,(w/2)-bx);addB(bx,-r-5,Math.cos(ang)*spd,Math.sin(ang)*spd,r,cfg);});break;}
     case 'inward':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.85;addB(bx,-r-5,(w/2-bx)/(h*0.7)*spd,spd,r,cfg);});break;}
@@ -1198,14 +1224,20 @@ function spawnPatternDirect(pat,spd,r,cfg,w,h){
   }
 }
 
-const IPOOL=['heart','heart','bomb','slow','shield','double','magnet','freeze','bigbomb','mini','combolock'];
-const IEMOJI={heart:'❤',bomb:'💥',slow:'🐢',shield:'🛡',double:'⭐',magnet:'🧲',freeze:'❄',bigbomb:'💣',mini:'🌀',combolock:'🎆'};
-const ICOLOR={heart:'#ff2d78',bomb:'#ffd700',slow:'#39ff14',shield:'#00f5ff',double:'#ffaa00',
-              magnet:'#dd88ff',freeze:'#88ddff',bigbomb:'#ff6600',mini:'#aaffee',combolock:'#ffdd44'};
+const IPOOL=['heart','heart','bomb','bomb','slow','shield','magnet','freeze','bigbomb','mini','pill','frenzy','big','speedup','coin','coin','coin','gem','gem','gift'];
+const IEMOJI={heart:'❤',bomb:'💥',slow:'🐢',shield:'🛡',magnet:'🧲',freeze:'❄',bigbomb:'💣',mini:'🌀',
+              pill:'💊',frenzy:'🔥',big:'🔺',speedup:'💨',addtime:'➕',removetime:'➖',
+              coin:'🪙',gem:'💎',gift:'🎁'};
+const ICOLOR={heart:'#ff2d78',bomb:'#ffd700',slow:'#39ff14',shield:'#00f5ff',
+              magnet:'#dd88ff',freeze:'#88ddff',bigbomb:'#ff6600',mini:'#aaffee',
+              pill:'#00ddff',frenzy:'#ff4400',big:'#ff5555',speedup:'#ffaa44',addtime:'#22ff88',removetime:'#ff2244',
+              coin:'#ffdd00',gem:'#88ffff',gift:'#ff88ff'};
 
 function spawnItem(){
-  const type=pick(IPOOL);
-  items.push({x:rand(30,W()-30),y:-22,dy:1.9+speedM*.28,type,r:16,age:0,bob:Math.random()*Math.PI*2});
+  const pool=[...IPOOL];
+  if(stageMode){pool.push('addtime','removetime');}
+  const type=pick(pool);
+  items.push({x:rand(30,W()-30),y:-22,dy:1.9+speedM*.28,type,r:16,age:0,bob:0});
 }
 
 function applyItem(it){
@@ -1214,13 +1246,20 @@ function applyItem(it){
   if(t==='heart'){lives=Math.min(maxLives+1,lives+1);maxLives=Math.max(maxLives,lives);refLives();buildHUD();showNotif('❤ 生命+1！','#ff2d78');}
   else if(t==='bomb'){bombs=Math.min(maxBombs+1,bombs+1);maxBombs=Math.max(maxBombs,bombs);refBombs();buildHUD();showNotif('💥 炸彈+1！','#ffd700');}
   else if(t==='slow'){clearTimeout(slowTO);slowFactor=.5;showNotif('🐢 減速5秒','#39ff14');slowTO=setTimeout(()=>slowFactor=1,5000);}
-  else if(t==='shield'){iframes=Math.max(iframes,240);showNotif('🛡 護盾4秒','#00f5ff');}
-  else if(t==='double'){clearTimeout(doubleTO);doubleOn=true;showNotif('⭐ 雙倍分10秒','#ffaa00');doubleTO=setTimeout(()=>doubleOn=false,10000);}
+  else if(t==='shield'){iframes=480;showNotif('🛡 護盾8秒！','#00f5ff');}
   else if(t==='magnet'){magnetOn=true;showNotif('🧲 磁鐵8秒','#dd88ff');setTimeout(()=>magnetOn=false,8000);}
   else if(t==='freeze'){frozenOn=true;showNotif('❄ 冰凍3秒！','#88ddff');clearTimeout(frozenTO);frozenTO=setTimeout(()=>frozenOn=false,3000);}
-  else if(t==='bigbomb'){for(const b of bullets)spawnP(b.x,b.y,b.bFill,4);bullets=[];iframes=Math.max(iframes,180);showNotif('💣 大炸彈！清場+護盾','#ff6600');shakeF=12;shakeStr=7;}
+  else if(t==='bigbomb'){for(const b of bullets)spawnP(b.x,b.y,b.bFill,4);bullets=[];iframes=480;showNotif('💣 大炸彈！清場+護盾8秒','#ff6600');shakeF=12;shakeStr=7;}
   else if(t==='mini'){miniOn=true;showNotif('🌀 縮小5秒','#aaffee');clearTimeout(miniTO);miniTO=setTimeout(()=>miniOn=false,5000);}
-  else if(t==='combolock'){comboLockOn=true;showNotif('🎆 Combo保持10秒！','#ffdd44');clearTimeout(comboLockTO);comboLockTO=setTimeout(()=>comboLockOn=false,10000);}
+  else if(t==='pill'){pillOn=true;clearTimeout(pillTO);showNotif('💊 大力丸 8秒！','#00ddff');setTimeout(()=>{if(pillOn)showNotif('💊 大力丸還有3秒…','#00ddff');},5000);pillTO=setTimeout(()=>{pillOn=false;showNotif('💊 大力丸結束','#00ddff');},8000);}
+  else if(t==='frenzy'){frenzyOn=true;clearTimeout(frenzyTO);showNotif('🔥 狂暴！炸彈無限 5秒！','#ff4400');frenzyTO=setTimeout(()=>{frenzyOn=false;showNotif('🔥 狂暴結束','#ff4400');},5000);}
+  else if(t==='big'){bigOn=true;clearTimeout(bigTO);showNotif('🔺 放大了！小心！','#ff5555');bigTO=setTimeout(()=>{bigOn=false;},5000);}
+  else if(t==='speedup'){speedBoostFactor=1.8;clearTimeout(speedupTO);showNotif('💨 子彈加速了！','#ffaa44');speedupTO=setTimeout(()=>{speedBoostFactor=1;},5000);}
+  else if(t==='addtime'){if(stageMode){stageTimer+=10;showNotif('➕ 加時 +10秒！','#22ff88');}else showNotif('➕ 僅關卡模式有效','#22ff88');}
+  else if(t==='removetime'){if(stageMode){stageTimer=Math.max(0,stageTimer-8);showNotif('➖ 減時 -8秒！','#ff2244');shakeF=10;shakeStr=6;}else showNotif('➖ 僅關卡模式有效','#ff2244');}
+  else if(t==='coin'){if(!isStartingCount)score+=50;showNotif('🪙 +50分！','#ffdd00');}
+  else if(t==='gem'){if(!isStartingCount)score+=150;showNotif('💎 +150分！','#88ffff');}
+  else if(t==='gift'){if(!isStartingCount)score+=300;showNotif('🎁 +300分！','#ff88ff');}
   else if(t==='starGreen'){stageStarsCollected=Math.min(3,stageStarsCollected+1);showNotif('★ 星星 '+stageStarsCollected+'/3！','#39ff14');spawnP(it.x,it.y,'#39ff14',18);return;}
   spawnP(it.x,it.y,ICOLOR[t]||'#fff',10);
 }
@@ -1271,7 +1310,7 @@ function showNotif(txt,col){
 }
 
 function sweptCollide(b,dt){
-  const pr=player.r*(miniOn?.5:1)*HITBOX;
+  const pr=player.r*(miniOn?.5:bigOn?1.8:1)*HITBOX;
   const cr=b.r+pr;
   const dx=b.x-b.px, dy=b.y-b.py;
   const len2=dx*dx+dy*dy;
@@ -1293,8 +1332,8 @@ function loop(ts){
   lastTS=ts;frameN++;
 
   const cfg=DIFF[lastDiff];
-  const mult=(doubleOn?2:1)*comboMult;
-  
+  const mult=1;
+
   if(!isStartingCount) {
     score+=dt*mult;
   }
@@ -1311,7 +1350,7 @@ function loop(ts){
 
   if(!isStartingCount) {
     chkMile(si);
-    if(iframes>0)iframes=Math.max(0,iframes-dt*60);
+    if(iframes>0)iframes=Math.max(0,iframes-dt);
   }
 
   renderFrame(dt);
@@ -1337,9 +1376,8 @@ function endGame(){
   goT.textContent=cfg.death;goT.style.color=cfg.winCol;
   goSc.textContent=`得分：${s.toLocaleString()}${isNew&&!invincible?' 🎉 新紀錄！':''}${invincible?' (無敵不計分)':''}`;
   goBv.textContent=bests[lastDiff].toLocaleString();
+  goSt.style.gridTemplateColumns='repeat(2,1fr)';
   goSt.innerHTML=`
-    <div class="gs"><div class="gs-v">${statDodge}</div><div class="gs-l">DODGED</div></div>
-    <div class="gs"><div class="gs-v">${statCombo}</div><div class="gs-l">MAX COMBO</div></div>
     <div class="gs"><div class="gs-v">${statItem}</div><div class="gs-l">ITEMS</div></div>
     <div class="gs"><div class="gs-v">${statHit}</div><div class="gs-l">HITS</div></div>`;
   const DINFO=DKEYS.map((k,i)=>[k,DIFF[k].label.split(' ')[0]]);
@@ -1395,7 +1433,7 @@ const STAGES=(function(){
     'wizard','wizard','wizard','wizard','wizard',
     'mouseking','mouseking','mouseking','mouseking','mouseking',
     'gugu','gugu','gugu','gugu','eason'];
-  const BAG=['shield','heart','slow','bomb','bigbomb','double','magnet','freeze','mini','combolock'];
+  const BAG=['shield','heart','slow','bomb','bigbomb','pill','magnet','freeze','frenzy','mini'];
   // 累積彈幕池（每達到閾值加入新彈幕組）
   const TIERS=[
     ['straight','double','angled'],
@@ -1410,25 +1448,25 @@ const STAGES=(function(){
     ['chakram','shuriken','stagger'],
     ['hydra','claymore','web'],
     ['gravity','pendulum','delayed'],
-    ['aiming_triple','pursuit','random_walk','chaos']
+    ['aiming_triple','twin_burst','random_walk','chaos']
   ];
-  const THRESHOLDS=[0,3,6,10,14,18,22,26,30,34,38,42,46];
+  const THRESHOLDS=[0,4,8,13,18,23,28,32,36,40,44,47,49];
   const stages=NAMES.map((name,i)=>{
     let pats=[];
     for(let t=0;t<THRESHOLDS.length;t++){if(i>=THRESHOLDS[t])pats=pats.concat(TIERS[t]);}
     return{
       name,sub:SUBS[i],diff:DIFF_KEYS[i],
       dur:i<25?45:30,lives:2,bombs:2,
-      speed:+(4.7+(i/49)*7.6).toFixed(1),
+      speed:+(4.2+(i/49)*6.8).toFixed(1),
       speedCap:+(2.0-(i/49)*0.9).toFixed(2),
-      interval:Math.round(600-(i/49)*470),
+      interval:Math.round(620-(i/49)*440),
       bR:Math.round(14-(i/49)*4),
       patterns:pats,
       bagItem:BAG[i%10]
     };
   });
   // 第50關增強
-  Object.assign(stages[49],{speed:14.0,interval:100,speedCap:1.25,bR:9});
+  Object.assign(stages[49],{speed:12.0,interval:150,speedCap:1.18,bR:9});
   // 第51關（隱藏）
   stages.push({
     name:'第五十一關',sub:'傳說・天選之境',
@@ -1598,8 +1636,9 @@ function _doStartStage(idx,preloadItem){
   player.trail=[];iframes=0;shakeF=0;
   mileset=new Set();
   magnetOn=false;doubleOn=false;frozenOn=false;miniOn=false;comboLockOn=false;
+  pillOn=false;frenzyOn=false;bigOn=false;speedBoostFactor=1;
   statDodge=0;statHit=0;statItem=0;statCombo=0;
-  [comboTO,doubleTO,frozenTO,miniTO,comboLockTO,slowTO].forEach(t=>clearTimeout(t));
+  [comboTO,doubleTO,frozenTO,miniTO,comboLockTO,slowTO,pillTO,frenzyTO,bigTO,speedupTO].forEach(t=>clearTimeout(t));
   player.x=W()/2;player.y=H()*.82;
   stageTimer=st.dur;
   // 星星初始化
@@ -1786,7 +1825,7 @@ function spawnPatternWith(pat,spd,r,cfg,w,h){
     case 'aiming_triple':{const angles=[-0.18,0,0.18],sx=rand(r+20,w-r-20),sy=-r-5,dx=player.x-sx,dy=player.y-sy,d=Math.hypot(dx,dy)||1;angles.forEach(off=>{const a=Math.atan2(dy,dx)+off;addB(sx,sy,Math.cos(a)*spd,Math.sin(a)*spd,r,cfg);});break;}
     case 'side_burst':for(let i=0;i<5;i++){addB(-r,rand(h*.1,h*.7),spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);addB(w+r,rand(h*.1,h*.7),-spd*.9,rand(-spd*.2,spd*.2),r*.9,cfg);}break;
     case 'delayed':{const cnt=randInt(3,6);for(let i=0;i<cnt;i++)setTimeout(()=>{if(gstate==='playing')addB(rand(r+20,w-r-20),-r-5,rand(-.4,.4),spd,r,cfg);},i*180);break;}
-    case 'pursuit':{const b=addBx(rand(r+20,w-r-20),-r-5,0,spd*.5,r,cfg);b.pursuit=true;b.pursuitAcc=0;break;}
+    case 'twin_burst':{const lx=rand(r+20,w*.42),rx=rand(w*.58,w-r-20);for(let i=0;i<4;i++){const a=-Math.PI/2+((i-1.5)/3)*(Math.PI/2);addB(lx,-r-5,Math.cos(a)*spd*.65,Math.abs(Math.sin(a))*spd*.55+spd*.45,r*.82,cfg);addB(rx,-r-5,-Math.cos(a)*spd*.65,Math.abs(Math.sin(a))*spd*.55+spd*.45,r*.82,cfg);}break;}
     case 'chaos':{const types2=['straight','double','fan','wave','triple'];spawnPatternWith(pick(types2),spd,r,cfg,w,h);break;}
     case 'funnel':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.88;const ang=Math.atan2(h*0.75,(w/2)-bx);addB(bx,-r-5,Math.cos(ang)*spd,Math.sin(ang)*spd,r,cfg);});break;}
     case 'inward':{const offsets=[-0.42,-0.21,0,0.21,0.42];offsets.forEach(f=>{const bx=w/2+f*w*0.85;addB(bx,-r-5,(w/2-bx)/(h*0.7)*spd,spd,r,cfg);});break;}
@@ -1843,7 +1882,7 @@ function loopStage(ts){
 
   if(!isStartingCount) {
     chkMile(si);
-    if(iframes>0)iframes=Math.max(0,iframes-dt*60);
+    if(iframes>0)iframes=Math.max(0,iframes-dt);
   }
 
   // 純時間制：時間到即過關
@@ -1872,7 +1911,7 @@ function renderFrame(dt){
       if(magnetOn){const mx=player.x-it.x,my=player.y-it.y,md=Math.hypot(mx,my)||1;it.x+=mx/md*5.5*dt;it.y+=my/md*5.5*dt;}
       it.y+=it.dy*dt;
     }
-    const bx=Math.sin(it.age*2.4+it.bob)*4;
+    const bx=0;
     const ddx=it.x+bx-player.x,ddy=it.y-player.y;
     
     if(!isStartingCount && Math.hypot(ddx,ddy)<it.r+player.r+5){applyItem(it);items.splice(i,1);continue;}
@@ -1887,7 +1926,7 @@ function renderFrame(dt){
     }else{
       ctx.beginPath();ctx.arc(it.x+bx,it.y,it.r+5,0,Math.PI*2);ctx.strokeStyle=ICOLOR[it.type]+'50';ctx.lineWidth=2;ctx.stroke();
       ctx.font=`${it.r*1.75}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(IEMOJI[it.type],it.x+bx,it.y);
-      const iLbl={heart:'+命',bomb:'+彈',slow:'減速',shield:'護盾',double:'×2分',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸',mini:'縮小',combolock:'Combo'};
+      const iLbl={heart:'+命',bomb:'+彈',slow:'減速',shield:'護盾',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸',mini:'縮小',pill:'大力丸',frenzy:'狂暴',big:'放大！',speedup:'加速！',addtime:'+時間',removetime:'-時間',coin:'+50分',gem:'+150分',gift:'+300分'};
       ctx.font='9px Noto Sans TC';ctx.fillStyle='rgba(255,255,255,.38)';ctx.fillText(iLbl[it.type]||'',it.x+bx,it.y+it.r+8);
     }
   }
@@ -1899,8 +1938,11 @@ function renderFrame(dt){
   for(let i=0;i<player.trail.length;i++){const t=player.trail[i],a=(i/player.trail.length)*.3;ctx.beginPath();ctx.arc(t.x,t.y,player.r*(i/player.trail.length),0,Math.PI*2);ctx.fillStyle=iframes>0?`rgba(200,200,255,${a})`:`rgba(0,245,255,${a})`;ctx.fill();}
 
   // Player
-  const pr=player.r*(miniOn?.6:1);const shielded=invincible||iframes>0;
-  if(doubleOn){ctx.beginPath();ctx.arc(player.x,player.y,pr+16+Math.sin(frameN*.14)*3,0,Math.PI*2);ctx.strokeStyle='rgba(255,170,0,.22)';ctx.lineWidth=2;ctx.stroke();}
+  const pr=player.r*(bigOn?1.8:miniOn?.6:1);const shielded=invincible||iframes>0;
+  if(pillOn){ctx.beginPath();ctx.arc(player.x,player.y,pr+12+Math.sin(frameN*.12)*2,0,Math.PI*2);ctx.strokeStyle='rgba(0,221,255,.55)';ctx.lineWidth=2;ctx.stroke();}
+  if(frenzyOn){ctx.beginPath();ctx.arc(player.x,player.y,pr+14+Math.sin(frameN*.15)*3,0,Math.PI*2);ctx.strokeStyle='rgba(255,68,0,.65)';ctx.lineWidth=2.2;ctx.stroke();}
+  if(bigOn){ctx.beginPath();ctx.arc(player.x,player.y,pr+8,0,Math.PI*2);ctx.strokeStyle='rgba(255,80,80,.7)';ctx.lineWidth=3;ctx.stroke();}
+  if(speedBoostFactor>1){ctx.beginPath();ctx.arc(player.x,player.y,pr+10+Math.sin(frameN*.25)*4,0,Math.PI*2);ctx.strokeStyle='rgba(255,170,68,.5)';ctx.lineWidth=2;ctx.stroke();}
   if(frozenOn){ctx.beginPath();ctx.arc(player.x,player.y,pr+12+Math.sin(frameN*.1)*2,0,Math.PI*2);ctx.strokeStyle='rgba(136,221,255,.35)';ctx.lineWidth=3;ctx.stroke();}
   ctx.beginPath();ctx.arc(player.x,player.y,pr+9+Math.sin(frameN*.09)*2,0,Math.PI*2);ctx.strokeStyle=shielded?'rgba(255,255,255,.28)':'rgba(0,245,255,.18)';ctx.lineWidth=2;ctx.stroke();
   ctx.beginPath();ctx.arc(player.x,player.y,pr,0,Math.PI*2);
@@ -1924,7 +1966,7 @@ function renderFrame(dt){
     }
     
     if(!frozenOn && !isStartingCount){
-      if(b.homing){const tx=player.x-b.x,ty=player.y-b.y,d=Math.hypot(tx,ty)||1;const str=0.22*dt;b.dx+=(tx/d)*str;b.dy+=(ty/d)*str;const sp=Math.hypot(b.dx,b.dy),mx=cfg2.speed*speedM*.85;if(sp>mx){b.dx=b.dx/sp*mx;b.dy=b.dy/sp*mx;}}
+      if(b.homing){const tx=player.x-b.x,ty=player.y-b.y,d=Math.hypot(tx,ty)||1;const mx=cfg2.speed*speedM*.85;const sp=Math.hypot(b.dx,b.dy)||mx;const t=Math.min(1,0.12*dt);const nx=(b.dx/sp)*(1-t)+(tx/d)*t;const ny=(b.dy/sp)*(1-t)+(ty/d)*t;const nl=Math.hypot(nx,ny)||1;b.dx=nx/nl*mx;b.dy=ny/nl*mx;}
       if(b.boomerang){if(b.y>H()*.38&&b.bDir===1)b.bDir=-1;b.dy+=b.bDir*0.22*dt;}
       if(b.zigzag){b.zigT+=dt;if(b.zigT>16){b.zigDir*=-1;b.zigT=0;}b.dx=b.zigDir*cfg2.speed*speedM*.5;}
       if(b.bounce){if(b.x-b.r<0){b.x=b.r;b.dx=Math.abs(b.dx);}if(b.x+b.r>W()){b.x=W()-b.r;b.dx=-Math.abs(b.dx);}}
@@ -1938,8 +1980,7 @@ function renderFrame(dt){
       if(b.chakram){b.chakA+=.12*dt;b.dx=Math.cos(b.chakA)*b.chakSpd*.8;b.dy=Math.sin(b.chakA)*b.chakSpd*.8+b.chakSpd*.25;}
       if(b.shuriken){b.shuriA+=.15*dt;}
       if(b.hydra){b.hydraT+=dt;if(b.hydraGen<2&&b.hydraT>25){b.hydraGen++;b.hydraT=0;const spd2=cfg2.speed*speedM;addBx(b.x,b.y,rand(-spd2*.5,spd2*.5),spd2*.7,b.r*.75,cfg2);}}
-      if(b.pursuit){b.pursuitAcc+=dt*.15;const tx=player.x-b.x,ty=player.y-b.y,d=Math.hypot(tx,ty)||1;const sp=Math.min(cfg2.speed*speedM*1.1,Math.hypot(b.dx,b.dy)+b.pursuitAcc);b.dx=(tx/d)*sp;b.dy=(ty/d)*sp;}
-      b.x+=b.dx*dt*slowFactor;b.y+=b.dy*dt*slowFactor;
+      b.x+=b.dx*dt*slowFactor*speedBoostFactor;b.y+=b.dy*dt*slowFactor*speedBoostFactor;
     }
     const r=b.r;
     if(b.comet){ctx.beginPath();ctx.moveTo(b.px,b.py);ctx.lineTo(b.x,b.y);ctx.strokeStyle=b.bFill+'66';ctx.lineWidth=r*1.4;ctx.lineCap='round';ctx.stroke();ctx.lineCap='butt';}
@@ -1976,9 +2017,14 @@ function renderFrame(dt){
           ctx.beginPath();ctx.arc(x,y+s*.25,s*.78,-Math.PI*.85,-Math.PI*.15);ctx.stroke();break;
         case 'burst':
           for(let k=0;k<4;k++){const a=k*Math.PI/2;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*s*.32,y+Math.sin(a)*s*.32);ctx.lineTo(x+Math.cos(a)*s*.82,y+Math.sin(a)*s*.82);ctx.stroke();}break;
-        case 'homing':case 'pursuit':
+        case 'homing':
           ctx.beginPath();ctx.arc(x,y,s*.55,0,Math.PI*2);ctx.stroke();
           ctx.beginPath();ctx.arc(x,y,s*.18,0,Math.PI*2);ctx.fill();break;
+        case 'twin_burst':
+          [-s*.4,s*.4].forEach(cx=>{
+            ctx.beginPath();ctx.moveTo(x+cx-s*.22,y-s*.22);ctx.lineTo(x+cx+s*.22,y+s*.22);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(x+cx+s*.22,y-s*.22);ctx.lineTo(x+cx-s*.22,y+s*.22);ctx.stroke();
+          });break;
         case 'snipe':
           ctx.beginPath();ctx.moveTo(x-s*.7,y);ctx.lineTo(x+s*.7,y);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x,y-s*.7);ctx.lineTo(x,y+s*.7);ctx.stroke();
@@ -2088,12 +2134,13 @@ function renderFrame(dt){
     }
     
     if(!isStartingCount && sweptCollide(b,dt)){
+      if(pillOn){spawnP(b.x,b.y,'#00ddff',6);bullets.splice(i,1);continue;}
       if(!invincible&&iframes<=0){onHit(b);bullets.splice(i,1);if(gstate!=='playing'){if(needRst)ctx.restore();return;}continue;}
       else addCombo();
     }
     if(b.y>h+90||b.x<-100||b.x>w+100||b.y<-350){if(!b.boomerang && !isStartingCount) addCombo();statDodge++;bullets.splice(i,1);}
     // 追蹤彈幕（homing / pursuit）超過 10 秒自動消失
-    else if((b.homing||b.pursuit)&&b.age>600){spawnP(b.x,b.y,b.bFill,4);if(!isStartingCount){addCombo();statDodge++;}bullets.splice(i,1);}
+    else if(b.homing&&b.age>600){spawnP(b.x,b.y,b.bFill,4);if(!isStartingCount){addCombo();statDodge++;}bullets.splice(i,1);}
   }
 
   for(let i=particles.length-1;i>=0;i--){
@@ -2206,7 +2253,7 @@ function showBagSelect(targetIdx){
   const grid=document.getElementById('bag-item-grid');
   const counts={};bagItems.forEach(t=>counts[t]=(counts[t]||0)+1);
   Object.entries(counts).forEach(([type,count])=>{
-    const inames={heart:'生命+1',bomb:'炸彈+1',slow:'減速',shield:'護盾',double:'雙倍分',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸彈',mini:'縮小',combolock:'Combo保'};
+    const inames={heart:'生命+1',bomb:'炸彈+1',slow:'減速',shield:'護盾8秒',magnet:'磁鐵',freeze:'冰凍',bigbomb:'大炸彈',mini:'縮小',pill:'大力丸',frenzy:'狂暴'};
     const btn=document.createElement('button');
     btn.dataset.type=type;
     btn.style.cssText='width:74px;height:74px;border-radius:12px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .15s;-webkit-appearance:none;appearance:none';
